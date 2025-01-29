@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_USERNAME 20  // Taille maximale du nom d'utilisateur
-#define MAX_SAVE_NAME 50  // Taille maximale du nom de la sauvegarde
+#define MAX_USERNAME 20
+#define MAX_SAVE_NAME 50
+#define MAX_ITEM_NAME 20
 
 typedef struct {
     char name[20];
@@ -12,95 +13,168 @@ typedef struct {
     int defense;
 } Pokemon;
 
+typedef struct {
+    int potion;
+    int superPotion;
+    int rareCandy;
+    int supcoins;
+} Player;
+
+void buyItem(Player *player, int itemChoice) {
+    int price = 0;
+    char itemName[MAX_ITEM_NAME];
+
+    switch (itemChoice) {
+        case 1:
+            price = 100;
+            strcpy(itemName, "Potion");
+            if (player->supcoins >= price) {
+                player->supcoins -= price;
+                player->potion++;
+                printf("Vous avez acheté une %s pour %d Supcoins.\n", itemName, price);
+            } else {
+                printf("Vous n'avez pas assez de Supcoins pour acheter une %s.\n", itemName);
+            }
+            break;
+        case 2:
+            price = 300;
+            strcpy(itemName, "Super Potion");
+            if (player->supcoins >= price) {
+                player->supcoins -= price;
+                player->superPotion++;
+                printf("Vous avez acheté une %s pour %d Supcoins.\n", itemName, price);
+            } else {
+                printf("Vous n'avez pas assez de Supcoins pour acheter une %s.\n", itemName);
+            }
+            break;
+        case 3:
+            price = 700;
+            strcpy(itemName, "Rare Candy");
+            if (player->supcoins >= price) {
+                player->supcoins -= price;
+                player->rareCandy++;
+                printf("Vous avez acheté une %s pour %d Supcoins.\n", itemName, price);
+            } else {
+                printf("Vous n'avez pas assez de Supcoins pour acheter une %s.\n", itemName);
+            }
+            break;
+        default:
+            printf("Choix invalide.\n");
+            break;
+    }
+}
+
+void sellItem(Player *player, int itemChoice) {
+    int price = 0;
+    char itemName[MAX_ITEM_NAME];
+
+    switch (itemChoice) {
+        case 1:
+            price = 50;
+            strcpy(itemName, "Potion");
+            if (player->potion > 0) {
+                player->supcoins += price;
+                player->potion--;
+                printf("Vous avez vendu une %s pour %d Supcoins.\n", itemName, price);
+            } else {
+                printf("Vous n'avez pas de %s à vendre.\n", itemName);
+            }
+            break;
+        case 2:
+            price = 150;
+            strcpy(itemName, "Super Potion");
+            if (player->superPotion > 0) {
+                player->supcoins += price;
+                player->superPotion--;
+                printf("Vous avez vendu une %s pour %d Supcoins.\n", itemName, price);
+            } else {
+                printf("Vous n'avez pas de %s à vendre.\n", itemName);
+            }
+            break;
+        case 3:
+            price = 350;
+            strcpy(itemName, "Rare Candy");
+            if (player->rareCandy > 0) {
+                player->supcoins += price;
+                player->rareCandy--;
+                printf("Vous avez vendu une %s pour %d Supcoins.\n", itemName, price);
+            } else {
+                printf("Vous n'avez pas de %s à vendre.\n", itemName);
+            }
+            break;
+        default:
+            printf("Choix invalide.\n");
+            break;
+    }
+}
+
+void showInventory(Player *player) {
+    printf("Votre inventaire:\n");
+    printf("Potion: %d\n", player->potion);
+    printf("Super Potion: %d\n", player->superPotion);
+    printf("Rare Candy: %d\n", player->rareCandy);
+    printf("Supcoins: %d\n", player->supcoins);
+}
+
 int main() {
     char Username[MAX_USERNAME];
     int starterChoice;
-    int Location = 0;  // Initialiser Location à 0
+    int Location = 0;
     int Save;
     int Load;
-    char saveName[MAX_SAVE_NAME];  // Nom du fichier de sauvegarde
+    int choiceBuyorSell;
+    int itemChoice;
+    char saveName[MAX_SAVE_NAME];
     Pokemon starter;
+    Player player = {0, 0, 0, 0};  // Commencer avec 0 Supcoins pour les utilisateurs non admins
 
-    // Définir les Pokémon starters
     Pokemon charmander = {"Charmander", 39, 52, 43};
     Pokemon squirtle = {"Squirtle", 44, 48, 65};
     Pokemon bulbasaur = {"Bulbasaur", 45, 49, 49};
 
-    // Demander si l'utilisateur veut charger une sauvegarde
-    printf("Voulez-vous charger une sauvegarde ? 1 - Oui, 2 - Non : ");
-    scanf("%d", &Load);
+    printf("Veuillez entrer votre nom d'utilisateur : ");
+    scanf("%19s", Username);
 
-    if (Load == 1) {
-        // Demander le nom du fichier de sauvegarde à charger
-        printf("Entrez le nom de la sauvegarde à charger : ");
-        scanf("%s", saveName);
-
-        // Charger la sauvegarde depuis le fichier
-        FILE *file = fopen(saveName, "r");
-        if (file != NULL) {
-            // Lire les informations sauvegardées
-            fscanf(file, "Username: %s\n", Username);
-            char starterName[20];
-            fscanf(file, "Starter: %s\n", starterName);
-            fscanf(file, "Stats: HP = %d, Attaque = %d, Défense = %d\n", &starter.hp, &starter.attack, &starter.defense);
-
-            // Assigner le starter à partir du nom lu
-            if (strcmp(starterName, "Charmander") == 0) {
-                starter = charmander;
-            } else if (strcmp(starterName, "Squirtle") == 0) {
-                starter = squirtle;
-            } else if (strcmp(starterName, "Bulbasaur") == 0) {
-                starter = bulbasaur;
-            }
-
-            fclose(file);
-            printf("Sauvegarde chargée avec succès !\n");
-        } else {
-            printf("Aucune sauvegarde trouvée. Commencez une nouvelle partie.\n");
-        }
+    // Vérifier si l'utilisateur est ADMIN
+    if (strcmp(Username, "ADMIN") == 0) {
+        player.supcoins = 9999999;  // Si c'est ADMIN, lui donner 9999999 Supcoins
     } else {
-        // Si l'utilisateur ne veut pas charger de sauvegarde, commencer une nouvelle partie
-        printf("Veuillez entrer votre nom d'utilisateur : ");
-        scanf("%19s", Username);
-
-        printf("Bienvenue %s dans le monde Pokémon !\n", Username);
-
-        // Menu pour choisir le starter
-        printf("+-----------------------------------+\n");
-        printf("|                                   |\n");
-        printf("|       Choisir votre starter       |\n");
-        printf("|                                   |\n");
-        printf("|       1 - Charmander              |\n");
-        printf("|       2 - Squirtle                |\n");
-        printf("|       3 - Bulbasaur               |\n");
-        printf("|                                   |\n");
-        printf("+-----------------------------------+\n");
-        printf("Entrez le numéro de votre choix (1, 2 ou 3) : ");
-        scanf("%d", &starterChoice);
-
-        // Assigner le starter choisi
-        switch (starterChoice) {
-            case 1:
-                starter = charmander;
-                break;
-            case 2:
-                starter = squirtle;
-                break;
-            case 3:
-                starter = bulbasaur;
-                break;
-            default:
-                printf("Choix invalide. Aucun Pokémon sélectionné.\n");
-                return 0;
-        }
-
-        // Afficher les informations du starter choisi
-        printf("Vous avez choisi %s !\n", starter.name);
-        printf("Stats : HP = %d, Attaque = %d, Défense = %d\n", starter.hp, starter.attack, starter.defense);
-        printf("Bonne chance pour votre aventure, %s !\n", Username);
+        player.supcoins = 0;  // Sinon, les autres utilisateurs commencent avec 0 Supcoins
     }
 
-    // Menu des options d'action
+    printf("Bienvenue %s dans le monde Pokémon !\n", Username);
+
+    printf("+-----------------------------------+\n");
+    printf("|                                   |\n");
+    printf("|       Choisir votre starter       |\n");
+    printf("|                                   |\n");
+    printf("|       1 - Charmander              |\n");
+    printf("|       2 - Squirtle                |\n");
+    printf("|       3 - Bulbasaur               |\n");
+    printf("|                                   |\n");
+    printf("+-----------------------------------+\n");
+    printf("Entrez le numéro de votre choix (1, 2 ou 3) : ");
+    scanf("%d", &starterChoice);
+
+    switch (starterChoice) {
+        case 1:
+            starter = charmander;
+            break;
+        case 2:
+            starter = squirtle;
+            break;
+        case 3:
+            starter = bulbasaur;
+            break;
+        default:
+            printf("Choix invalide. Aucun Pokémon sélectionné.\n");
+            return 0;
+    }
+
+    printf("Vous avez choisi %s !\n", starter.name);
+    printf("Stats : HP = %d, Attaque = %d, Défense = %d\n", starter.hp, starter.attack, starter.defense);
+    printf("Bonne chance pour votre aventure, %s !\n", Username);
+
     while (1) {
         printf("+-------------------------------------+\n");
         printf("|                                     |\n");
@@ -121,6 +195,24 @@ int main() {
                 break;
             case 2:
                 printf("Vous entrez dans le Shop.\n");
+                showInventory(&player);
+                printf("Souhaitez-vous acheter ou vendre ? 1 - Acheter, 2 - Vendre : ");
+                scanf("%d", &choiceBuyorSell);
+                if (choiceBuyorSell == 1) {
+                    printf("1 - Potion (100 Supcoins)\n");
+                    printf("2 - Super Potion (300 Supcoins)\n");
+                    printf("3 - Rare Candy (700 Supcoins)\n");
+                    printf("Choisissez l'objet à acheter (1, 2, 3) : ");
+                    scanf("%d", &itemChoice);
+                    buyItem(&player, itemChoice);
+                } else if (choiceBuyorSell == 2) {
+                    printf("1 - Potion\n");
+                    printf("2 - Super Potion\n");
+                    printf("3 - Rare Candy\n");
+                    printf("Choisissez l'objet à vendre (1, 2, 3) : ");
+                    scanf("%d", &itemChoice);
+                    sellItem(&player, itemChoice);
+                }
                 break;
             case 3:
                 printf("Vous entrez dans le Pokémon Center.\n");
@@ -129,16 +221,18 @@ int main() {
                 printf("Voulez-vous sauvegarder avant de quitter ? 1 - Oui, 2 - Non : ");
                 scanf("%d", &Save);
                 if (Save == 1) {
-                    // Demander le nom de la sauvegarde
                     printf("Entrez le nom de la sauvegarde : ");
                     scanf("%s", saveName);
 
-                    // Sauvegarde dans le fichier choisi
                     FILE *file = fopen(saveName, "w");
                     if (file != NULL) {
                         fprintf(file, "Username: %s\n", Username);
                         fprintf(file, "Starter: %s\n", starter.name);
                         fprintf(file, "Stats: HP = %d, Attaque = %d, Défense = %d\n", starter.hp, starter.attack, starter.defense);
+                        fprintf(file, "Potion: %d\n", player.potion);
+                        fprintf(file, "SuperPotion: %d\n", player.superPotion);
+                        fprintf(file, "RareCandy: %d\n", player.rareCandy);
+                        fprintf(file, "Supcoins: %d\n", player.supcoins);
                         fclose(file);
                         printf("Le jeu a été sauvegardé avec succès dans %s.\n", saveName);
                     } else {
@@ -146,7 +240,7 @@ int main() {
                     }
                 }
                 printf("Vous avez quitté le Jeu. À bientôt !\n");
-                return 0; // Quitte le jeu
+                return 0;
             default:
                 printf("Choix invalide. Essayez encore.\n");
                 break;
