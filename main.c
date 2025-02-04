@@ -102,24 +102,21 @@ void showPokemons(Player *player) {
     }
 }
 
-Pokemon generateWildPokemon() {
+Pokemon generateWildPokemon(Pokemon playerPokemon) {
     char *names[] = {"Pikachu", "Eevee", "Rattata", "Zubat", "Geodude"};
     int index = rand() % 5;
 
-    int hp_values[] = {35, 40, 30, 30, 45};
-    int attack_values[] = {55, 52, 56, 45, 60};
-    int defense_values[] = {30, 50, 35, 45, 60};
-
+    // Calculer les stats du Pokémon sauvage en fonction des stats du Pokémon du joueur
     Pokemon wild = {
         .name = "",
-        .hp = hp_values[index],
-        .maxHp = hp_values[index],
-        .attack = attack_values[index],
-        .defense = defense_values[index],
-        .speed = (rand() % 10) + 5,
+        .level = playerPokemon.level + (rand() % 3 - 1), // Niveau du joueur + (-1, 0 ou 1)
+        .maxHp = playerPokemon.maxHp, // Max HP similaire
+        .hp = playerPokemon.maxHp, // HP initialisé à la valeur maximale
+        .attack = playerPokemon.attack + (rand() % 5), // Attaque similaire
+        .defense = playerPokemon.defense + (rand() % 5), // Défense similaire
+        .speed = playerPokemon.speed + (rand() % 5), // Vitesse similaire
         .accuracy = (rand() % 5) + 1,
         .evasion = (rand() % 5) + 1,
-        .level = 1,
         .exp = 0,
     };
 
@@ -149,7 +146,8 @@ void levelUp(Pokemon *pokemon) {
 
 void battle(Player *player, Pokemon wild) {
     Pokemon *ally = &player->pokemons[0];
-    printf("Un %s sauvage apparait !\n", wild.name);
+    printf("Un %s sauvage apparait ! Niveau: %d\n", wild.name, wild.level);
+    printf("Stats du %s: HP: %d/%d, Attaque: %d, Defense: %d\n", wild.name, wild.hp, wild.maxHp, wild.attack, wild.defense);
 
     int flee = 0;
     while (ally->hp > 0 && wild.hp > 0 && !flee) {
@@ -245,7 +243,8 @@ void exploreNature(Player *player) {
         return;
     }
 
-    Pokemon wild = generateWildPokemon();
+    // Utiliser le premier Pokémon du joueur pour générer le Pokémon sauvage
+    Pokemon wild = generateWildPokemon(player->pokemons[0]);
     battle(player, wild);
 }
 
