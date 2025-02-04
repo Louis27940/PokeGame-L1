@@ -109,23 +109,30 @@ Pokemon generateWildPokemon(Pokemon playerPokemon) {
     // Calculer les stats du Pokémon sauvage en fonction des stats du Pokémon du joueur
     Pokemon wild = {
         .name = "",
-        .level = playerPokemon.level + (rand() % 3 - 1), // Niveau du joueur + (-1, 0 ou 1)
-        .maxHp = playerPokemon.maxHp, // Max HP similaire
-        .hp = playerPokemon.maxHp, // HP initialisé à la valeur maximale
-        .attack = playerPokemon.attack + (rand() % 5), // Attaque similaire
-        .defense = playerPokemon.defense + (rand() % 5), // Défense similaire
-        .speed = playerPokemon.speed + (rand() % 5), // Vitesse similaire
-        .accuracy = (rand() % 5) + 1,
-        .evasion = (rand() % 5) + 1,
-        .exp = 0,
+        .level = playerPokemon.level + (rand() % 3 - 1) // Niveau du joueur + (-1, 0 ou 1)
     };
+
+    // S'assurer que le niveau du Pokémon sauvage est au moins 1
+    if (wild.level < 1) {
+        wild.level = 1;
+    }
+
+    // Initialiser les autres statistiques
+    wild.maxHp = playerPokemon.maxHp; // Max HP similaire
+ wild.hp = wild.maxHp; // HP initialisé à la valeur maximale
+    wild.attack = playerPokemon.attack + (rand() % 5); // Attaque similaire
+    wild.defense = playerPokemon.defense + (rand() % 5); // Défense similaire
+    wild.speed = playerPokemon.speed + (rand() % 5); // Vitesse similaire
+    wild.accuracy = (rand() % 5) + 1;
+    wild.evasion = (rand() % 5) + 1;
+    wild.exp = 0;
 
     snprintf(wild.name, sizeof(wild.name), "%s", names[index]);
     return wild;
 }
 
 int calculateDamage(int attack, int defense) {
-    int damage = attack - (defense / 2);
+    int damage = (attack - (defense / 2)) / 2; // Réduction des dégâts pour prolonger les combats
     return damage < 0 ? 0 : damage;
 }
 
@@ -147,17 +154,19 @@ void levelUp(Pokemon *pokemon) {
 void battle(Player *player, Pokemon wild) {
     Pokemon *ally = &player->pokemons[0];
     printf("Un %s sauvage apparait ! Niveau: %d\n", wild.name, wild.level);
-    printf("Stats du %s: HP: %d/%d, Attaque: %d, Defense: %d\n", wild.name, wild.hp, wild.maxHp, wild.attack, wild.defense);
+    printf("Stats du %s: HP: %d/%d, Attaque: %d, Defense: %d, Vitesse: %d\n", wild.name, wild.hp, wild.maxHp, wild.attack, wild.defense, wild.speed);
 
     int flee = 0;
     while (ally->hp > 0 && wild.hp > 0 && !flee) {
+        int action; // Déclaration de la variable action ici
+
+        // Tour du joueur
         printf("\nVotre tour !\n");
         printf("Que voulez-vous faire ?\n");
         printf("1 - Attaquer\n");
         printf("2 - Esquiver\n");
         printf("3 - Fuir\n");
         printf("4 - Capturer\n");
-        int action;
         scanf("%d", &action);
 
         switch (action) {
@@ -206,22 +215,19 @@ void battle(Player *player, Pokemon wild) {
             break;
         }
 
-        if (flee) {
-            printf("Vous avez fui le combat !\n");
-            break;
-        }
-
-        // Tour de l'ennemi
-        if (!flee) {
+        // Tour du Pokémon sauvage
+        if (wild.hp > 0) { // Vérifier si le Pokémon sauvage est toujours en vie
+            printf("%s attaque %s !\n", wild.name, ally->name);
             int damage = calculateDamage(wild.attack, ally->defense);
             ally->hp -= damage;
             if (ally->hp < 0) ally->hp = 0;
-            printf("%s attaque %s ! Degats: %d, HP restant: %d\n", wild.name, ally->name, damage, ally->hp);
-        }
-    }
+            printf("Degats: %d, HP restant: %d\n", damage, ally->hp);
 
-    if (ally->hp <= 0) {
-        printf("Vous avez perdu le combat.\n");
+            if (ally->hp <= 0) {
+                printf("Vous avez perdu le combat.\n");
+                break;
+            }
+        }
     }
 }
 
@@ -258,7 +264,7 @@ int main() {
     Player player = {0, 0, 0, 0, {}, 0};
 
     Pokemon charmander = {"Charmander", 39, 39, 52, 43, 65, 100, 100, 1, 0};
-    Pokemon squirtle = {"Squirtle", 44, 44, 48, 65, 43, 100, 100, 1, 0};
+    Pokemon squirtle = {"Squirtle", 44, 44, 48, 65, 43, 100, 100, 1, 0 };
     Pokemon bulbasaur = {"Bulbasaur", 45, 45, 49, 49, 45, 100, 100, 1, 0};
 
     printf("Veuillez entrer votre nom d'utilisateur : ");
@@ -367,7 +373,7 @@ int main() {
                 break;
             case 6:
                 printf("Bienvenue au Centre Pokemon !\n");
-                healPokemons(&player);
+                healPokemons(& player);
                 break;
             case 7:
                 printf("Merci d'avoir joue. À bientôt !\n");
