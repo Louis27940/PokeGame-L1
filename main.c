@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
+#include <time.h>
 
 #define MAX_USERNAME 20
 #define MAX_SAVE_NAME 50
@@ -10,12 +12,14 @@
 typedef struct {
     char name[20];
     int hp;
-    int maxHp;  // Ajout de maxHp pour stocker les HP maximum
+    int maxHp;
     int attack;
     int defense;
     int speed;
     int accuracy;
     int evasion;
+    int level;
+    int exp;
 } Pokemon;
 
 typedef struct {
@@ -89,9 +93,11 @@ void showPokemons(Player *player) {
         printf("Voici vos Pokemon:\n");
         for (int i = 0; i < player->numPokemons; i++) {
             printf("Pokemon %d: %s\n", i + 1, player->pokemons[i].name);
-            printf("  HP: %d/%d\n", player->pokemons[i].hp, player->pokemons[i].maxHp);  // Affiche les HP actuels et max
+            printf("  HP: %d/%d\n", player->pokemons[i].hp, player->pokemons[i].maxHp);
             printf("  Attaque: %d\n", player->pokemons[i].attack);
-            printf("  Defense: %d\n\n", player->pokemons[i].defense);
+            printf("  Defense: %d\n", player->pokemons[i].defense);
+            printf("  Niveau: %d\n", player->pokemons[i].level);
+            printf("  Exp: %d\n\n", player->pokemons[i].exp);
         }
     }
 }
@@ -107,12 +113,14 @@ Pokemon generateWildPokemon() {
     Pokemon wild = {
         .name = "",
         .hp = hp_values[index],
-        .maxHp = hp_values[index],  // Initialiser maxHp
+        .maxHp = hp_values[index],
         .attack = attack_values[index],
         .defense = defense_values[index],
         .speed = (rand() % 10) + 5,
         .accuracy = (rand() % 5) + 1,
-        .evasion = (rand() % 5) + 1
+        .evasion = (rand() % 5) + 1,
+        .level = 1,
+        .exp = 0,
     };
 
     snprintf(wild.name, sizeof(wild.name), "%s", names[index]);
@@ -121,7 +129,22 @@ Pokemon generateWildPokemon() {
 
 int calculateDamage(int attack, int defense) {
     int damage = attack - (defense / 2);
-    return damage < 0 ? 0 : damage;  // Les dégâts ne peuvent pas être négatifs
+    return damage < 0 ? 0 : damage;
+}
+
+void levelUp(Pokemon *pokemon) {
+    int exp_needed = 500 + (pokemon->level - 1) * 1000;  // Exp requise pour le prochain niveau
+    while (pokemon->exp >= exp_needed) {
+        pokemon->exp -= exp_needed;  // Réduction de l'XP après passage de niveau
+        pokemon->level++;
+        exp_needed += 1000;  // Mise à jour de l'XP nécessaire pour le niveau suivant
+        // Augmentation des stats
+        pokemon->maxHp = (int)(pokemon->maxHp * 1.3);
+        pokemon->attack = (int)(pokemon->attack * 1.3);
+        pokemon->defense = (int)(pokemon->defense * 1.3);
+        pokemon->hp = pokemon->maxHp; // Soins
+        printf("%s est passe au niveau %d !\n", pokemon->name, pokemon->level);
+    }
 }
 
 void battle(Player *player, Pokemon wild) {
@@ -141,15 +164,18 @@ void battle(Player *player, Pokemon wild) {
 
         switch (action) {
             case 1:  // Attaquer
-                int damage = calculateDamage(ally->attack, wild.defense);
-                wild.hp -= damage;
-                if (wild.hp < 0) wild.hp = 0;  // S'assurer que les HP du Pokémon sauvage ne sont pas inférieurs à 0
-                printf("Vous attaquez %s ! Degats: %d, HP restant: %d\n", wild.name, damage, wild.hp);
+                {
+                    int damage = calculateDamage(ally->attack, wild.defense);
+                    wild.hp -= damage;
+                    if (wild.hp < 0) wild.hp = 0;
+                    printf("Vous attaquez %s ! Degats: %d, HP restant: %d\n", wild.name, damage, wild.hp);
+                }
                 break;
             case 2:  // Esquiver
                 printf("Vous tentez d'esquiver !\n");
                 if (rand() % 2 == 0) {
                     printf("Esquive reussie !\n");
+                    continue; // Si l'esquive réussit, on passe à la prochaine itération sans subir de dégâts
                 } else {
                     printf("Esquive echouee.\n");
                 }
@@ -160,10 +186,10 @@ void battle(Player *player, Pokemon wild) {
                 break;
             case 4:  // Capturer
                 printf("Vous tentez de capturer %s !\n", wild.name);
-                if (rand() % 3 == 0) {  // Chance de capture
+                if (rand() % 3 == 0) {
                     printf("%s a ete capture !\n", wild.name);
                     player->pokemons[player->numPokemons++] = wild;
-                    wild.hp = 0;  // Le combat se termine si le pokemon est capturé
+                    wild.hp = 0;
                 } else {
                     printf("La capture a echoue.\n");
                 }
@@ -175,6 +201,10 @@ void battle(Player *player, Pokemon wild) {
 
         if (wild.hp <= 0) {
             printf("%s a ete vaincu !\n", wild.name);
+            int exp_gagnee = (rand() % 51) + 75;  // XP gagnée
+            ally->exp += exp_gagnee;
+            printf("%s a gagne %d points d'experience\n", ally->name, exp_gagnee);
+            levelUp(ally);  // Vérifier si le Pokémon monte de niveau
             break;
         }
 
@@ -187,7 +217,7 @@ void battle(Player *player, Pokemon wild) {
         if (!flee) {
             int damage = calculateDamage(wild.attack, ally->defense);
             ally->hp -= damage;
-            if (ally->hp < 0) ally->hp = 0;  // S'assurer que les HP du Pokémon du joueur ne sont pas inférieurs à 0
+            if (ally->hp < 0) ally->hp = 0;
             printf("%s attaque %s ! Degats: %d, HP restant: %d\n", wild.name, ally->name, damage, ally->hp);
         }
     }
@@ -220,6 +250,7 @@ void exploreNature(Player *player) {
 }
 
 int main() {
+    srand(time(NULL));
     char Username[MAX_USERNAME];
     int starterChoice;
     int Location = 0;
@@ -227,19 +258,19 @@ int main() {
     int itemChoice;
     Player player = {0, 0, 0, 0, {}, 0};
 
-    Pokemon charmander = {"Charmander", 39, 39, 52, 43, 65, 100, 100};
-    Pokemon squirtle = {"Squirtle", 44, 44, 48, 65, 43, 100, 100};
-    Pokemon bulbasaur = {"Bulbasaur", 45, 45, 49, 49, 45, 100, 100};
+    Pokemon charmander = {"Charmander", 39, 39, 52, 43, 65, 100, 100, 1, 0};
+    Pokemon squirtle = {"Squirtle", 44, 44, 48, 65, 43, 100, 100, 1, 0};
+    Pokemon bulbasaur = {"Bulbasaur", 45, 45, 49, 49, 45, 100, 100, 1, 0};
 
     printf("Veuillez entrer votre nom d'utilisateur : ");
     scanf("%19s", Username);
 
-    // Verifier si l'utilisateur est ADMIN
+    // Vérifier si l'utilisateur est ADMIN
     if (strcmp(Username, "ADMIN") == 0) {
-        player.supcoins = 999999;  // Si c'est ADMIN, lui donner 999999 Supcoins
-        player.potion = 20;        // Donner 20 Potions
-        player.superPotion = 20;   // Donner 20 Super Potions
-        player.rareCandy = 20;     // Donner 20 Rare Candies
+        player.supcoins = 999999;
+        player.potion = 20;
+        player.superPotion = 20;
+        player.rareCandy = 20;
     } else {
         player.supcoins = 0;  // Sinon, les autres utilisateurs commencent avec 0 Supcoins
     }
@@ -346,4 +377,5 @@ int main() {
                 printf("Choix invalide.\n");
         }
     }
+    return 0;
 }
