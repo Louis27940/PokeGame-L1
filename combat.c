@@ -1,10 +1,12 @@
 //
 // Created by louis on 08/02/2025.
 //
-
 #include "combat.h"
 #include <stdio.h>
 #include <stdlib.h>
+
+// On définit ici la puissance de base d'une attaque.
+#define BASE_MOVE_DAMAGE 50
 
 Pokemon generateWildPokemon(Pokemon playerPokemon) {
     char *names[] = {"Pikachu", "Eevee", "Rattata", "Zubat", "Geodude"};
@@ -33,15 +35,13 @@ Pokemon generateWildPokemon(Pokemon playerPokemon) {
 }
 
 void battle(Player *player, Pokemon wild) {
-   Pokemon *ally = &player->pokemons[0];
+    Pokemon *ally = &player->pokemons[0];
     printf("Un %s sauvage apparait ! Niveau: %d\n", wild.name, wild.level);
-    printf("Stats du %s: HP: %d/%d, Attaque: %d, Defense: %d, Vitesse: %d\n", wild.name, wild.hp, wild.maxHp, wild.attack, wild.defense, wild.speed);
+    printf("Stats du %s: HP: %d/%d, Attaque: %d, Defense: %d, Vitesse: %d\n",
+           wild.name, wild.hp, wild.maxHp, wild.attack, wild.defense, wild.speed);
 
-    int flee = 0;
-    while (ally->hp > 0 && wild.hp > 0 && !flee) {
-        int action; // Déclaration de la variable action ici
-
-        // Tour du joueur
+    while (ally->hp > 0 && wild.hp > 0) {
+        int action;
         printf("\nVotre tour !\n");
         printf("Que voulez-vous faire ?\n");
         printf("1 - Attaquer\n");
@@ -52,57 +52,86 @@ void battle(Player *player, Pokemon wild) {
 
         switch (action) {
             case 1:  // Attaquer
-                {
-                    int damage = calculateDamage(ally->attack, wild.defense);
-                    wild.hp -= damage;
-                    if (wild.hp < 0) wild.hp = 0;
-                    printf("Vous attaquez %s ! Degats: %d, HP restant: %d\n", wild.name, damage, wild.hp);
-                }
-                break;
-            case 2:  // Esquiver
-                printf("Vous tentez d'esquiver !\n");
-                if (rand() % 2 == 0) {
-                    printf("Esquive reussie !\n");
-                    continue; // Si l'esquive réussit, on passe à la prochaine itération sans subir de dégâts
-                } else {
-                    printf("Esquive echouee.\n");
-                }
-                break;
-            case 3:  // Fuir
-                printf("Vous tentez de fuir !\n");
-                flee = 1;
-                break;
-            case 4:  // Capturer
-                printf("Vous tentez de capturer %s !\n", wild.name);
-                if (rand() % 3 == 0) {
-                    printf("%s a ete capture !\n", wild.name);
-                    player->pokemons[player->numPokemons++] = wild;
+            {
+                int damage = calculateDamage(ally->attack, wild.defense);
+                wild.hp -= damage;
+                if (wild.hp < 0)
                     wild.hp = 0;
+                printf("Vous attaquez %s ! Dégâts: %d, HP restant: %d\n",
+                       wild.name, damage, wild.hp);
+            }
+            break;
+            case 2:  // Esquiver
+            {
+                printf("Vous tentez d'esquiver !\n");
+                /* Calcul du taux d'esquive selon la formule :
+                   dodgeRate = (Launcher_Accuracy / (Launcher_Accuracy + Target_Evasion)) + 0.1 */
+                float dodgeRate = (float)wild.accuracy / ((float)wild.accuracy + (float)ally->evasion) + 0.1f;
+                if (dodgeRate > 1.0f)
+                    dodgeRate = 1.0f;  // On limite la probabilité à 100%
+                float chance = (float)rand() / (float)RAND_MAX;
+                if (chance < dodgeRate) {
+                    printf("Esquive réussie ! Vous évitez l'attaque ennemie.\n");
+                    /* L'attaque ennemie est annulée pour ce tour */
+                    continue;
                 } else {
-                    printf("La capture a echoue.\n");
+                    printf("Esquive échouée !\n");
                 }
-                break;
+            }
+            break;
+            case 3:  // Fuir
+            {
+                printf("Vous tentez de fuir !\n");
+                float successRate = (float)ally->speed / ((float)ally->speed + wild.speed);
+                float chance = (float)rand() / (float)RAND_MAX;
+                if (chance < successRate) {
+                    printf("Vous avez réussi à fuir !\n");
+                    return;  // Fin du combat
+                } else {
+                    printf("La fuite a échoué !\n");
+                }
+            }
+            break;
+            case 4:  // Capturer
+            {
+                printf("Vous tentez de capturer %s !\n", wild.name);
+                /* Calcul du taux de capture selon la formule :
+                   captureRate = ((Enemy_MaxHP - Enemy_HP) / Enemy_MaxHP) - 0.5 */
+                float captureRate = ((float)wild.maxHp - wild.hp) / ((float)wild.maxHp) - 0.5f;
+                if (captureRate < 0)
+                    captureRate = 0;  // Aucune chance de capture si la formule donne une valeur négative
+                float chance = (float)rand() / (float)RAND_MAX;
+                if (chance < captureRate) {
+                    printf("Capture réussie ! Vous avez capturé %s !\n", wild.name);
+                    player->pokemons[player->numPokemons++] = wild;  // Clonage du Supémon ennemi
+                    return;  // Fin du combat par capture
+                } else {
+                    printf("La capture a échoué.\n");
+                }
+            }
+            break;
             default:
                 printf("Choix invalide.\n");
                 break;
         }
 
         if (wild.hp <= 0) {
-            printf("%s a ete vaincu !\n", wild.name);
+            printf("%s a été vaincu !\n", wild.name);
             int exp_gagnee = (rand() % 51) + 75;  // XP gagnée
             ally->exp += exp_gagnee;
-            printf("%s a gagne %d points d'experience\n", ally->name, exp_gagnee);
+            printf("%s a gagné %d points d'expérience\n", ally->name, exp_gagnee);
             levelUp(ally);  // Vérifier si le Pokémon monte de niveau
             break;
         }
 
-        // Tour du Pokémon sauvage
-        if (wild.hp > 0) { // Vérifier si le Pokémon sauvage est toujours en vie
+        // Tour du Pokémon sauvage (s'il est toujours en vie)
+        if (wild.hp > 0) {
             printf("%s attaque %s !\n", wild.name, ally->name);
             int damage = calculateDamage(wild.attack, ally->defense);
             ally->hp -= damage;
-            if (ally->hp < 0) ally->hp = 0;
-            printf("Degats: %d, HP restant: %d\n", damage, ally->hp);
+            if (ally->hp < 0)
+                ally->hp = 0;
+            printf("Dégâts: %d, HP restant: %d\n", damage, ally->hp);
 
             if (ally->hp <= 0) {
                 printf("Vous avez perdu le combat.\n");
@@ -113,12 +142,23 @@ void battle(Player *player, Pokemon wild) {
 }
 
 int calculateDamage(int attack, int defense) {
-    int damage = (attack - (defense / 2)) / 2;
-    return damage < 0 ? 0 : damage;
+
+    float rawDamage = ((float)attack * BASE_MOVE_DAMAGE) / (float)defense;
+    int lower = (int)rawDamage;
+    // Vérifie si rawDamage est déjà entier
+    if (rawDamage == (float)lower) {
+        return lower;
+    } else {
+        // 50% de chance de retourner lower ou lower + 1
+        if (rand() % 2 == 0)
+            return lower;
+        else
+            return lower + 1;
+    }
 }
 
 void levelUp(Pokemon *pokemon) {
-    int exp_needed = 500 + (pokemon->level - 1) * 1000;  // Exp requise pour le prochain niveau
+    int exp_needed = 500 + (pokemon->level - 1) * 1000;  // XP requise pour le prochain niveau
     while (pokemon->exp >= exp_needed) {
         pokemon->exp -= exp_needed;  // Réduction de l'XP après passage de niveau
         pokemon->level++;
@@ -128,13 +168,13 @@ void levelUp(Pokemon *pokemon) {
         pokemon->attack = (int)(pokemon->attack * 1.3);
         pokemon->defense = (int)(pokemon->defense * 1.3);
         pokemon->hp = pokemon->maxHp; // Soins
-        printf("%s est passe au niveau %d !\n", pokemon->name, pokemon->level);
+        printf("%s est passé au niveau %d !\n", pokemon->name, pokemon->level);
     }
 }
 
 void exploreNature(Player *player) {
     if (player->numPokemons == 0) {
-        printf("Vous devez avoir au moins un Pokemon pour explorer.\n");
+        printf("Vous devez avoir au moins un Pokémon pour explorer.\n");
         return;
     }
 

@@ -174,7 +174,7 @@ int main() {
             return 0;
             default:
                 printf("Choix invalide.\n");
-            break;
+            break ;
         }
     }
 

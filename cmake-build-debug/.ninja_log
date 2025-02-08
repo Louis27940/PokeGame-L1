@@ -1,7 +1,14 @@
 # ninja log v6
-27	154	7607329167786005	CMakeFiles/main.dir/shop.c.obj	313714a80663e9e2
-5	141	7607368581538467	CMakeFiles/main.dir/main.c.obj	a3e53515a67d813
 12	158	7607329167629972	CMakeFiles/main.dir/joueur.c.obj	762811afce8cd4ff
+5	141	7607368581538467	CMakeFiles/main.dir/main.c.obj	a3e53515a67d813
+27	154	7607329167786005	CMakeFiles/main.dir/shop.c.obj	313714a80663e9e2
 19	164	7607329167703056	CMakeFiles/main.dir/combat.c.obj	4be85637e1f1414b
 141	274	7607368582905752	main.exe	5ff1b95dd31bbe97
 13	137	7607368581624818	CMakeFiles/main.dir/save.c.obj	45653ff34816f23c
+9	539	7608348676977125	build.ninja	7f39de1660e0c905
+8	126	7608348677356789	CMakeFiles/main.dir/joueur.c.obj	762811afce8cd4ff
+18	129	7608348677454623	CMakeFiles/main.dir/shop.c.obj	313714a80663e9e2
+23	138	7608348677505686	CMakeFiles/main.dir/save.c.obj	45653ff34816f23c
+13	148	7608348677405992	CMakeFiles/main.dir/combat.c.obj	4be85637e1f1414b
+4	191	7608348677310452	CMakeFiles/main.dir/main.c.obj	a3e53515a67d813
+191	527	7608348679174462	main.exe	5ff1b95dd31bbe97
