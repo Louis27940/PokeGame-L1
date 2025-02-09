@@ -1,3 +1,0 @@
-C:/Users/louis/CLionProjects/PokeGame/cmake-build-debug/CMakeFiles/main.dir
-C:/Users/louis/CLionProjects/PokeGame/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/louis/CLionProjects/PokeGame/cmake-build-debug/CMakeFiles/rebuild_cache.dir

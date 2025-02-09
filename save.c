@@ -11,8 +11,9 @@ void saveGameText(const Player *player, const char *username) {
     char filename[100];
     /* On construit le nom de fichier, par exemple "Alice.txt" */
     snprintf(filename, sizeof(filename), "%s.txt", username);
+    printf("[DEBUG] Nom du fichier de sauvegarde: %s\n", filename);
 
-    FILE *fp = fopen(filename, "w");
+    FILE *fp = fopen(filename, "w+");
     if (fp == NULL) {
         perror("Erreur lors de l'ouverture du fichier de sauvegarde");
         return;

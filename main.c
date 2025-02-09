@@ -70,52 +70,53 @@ int main() {
     }
 
     printf("Bienvenue %s dans le monde Pokemon !\n", Username);
-
     int result;
-    while (1) {
-        printf("\n");
-        printf("+-----------------------------------+\n");
-        printf("|           ~~~* * * * *~~~         |\n");
-        printf("|         CHOISISSEZ UN STARTER     |\n");
-        printf("|           ~~~* * * * *~~~         |\n");
-        printf("+-----------------------------------+\n");
-        printf("|                                   |\n");
-        printf("|      [1] Charmander (Feu)         |\n");
-        printf("|      [2] Squirtle   (Eau)         |\n");
-        printf("|      [3] Bulbasaur  (Plante)      |\n");
-        printf("|                                   |\n");
-        printf("+-----------------------------------+\n");
-        printf("Votre choix : ");
+    if (player.numPokemons == 0) {
+        while (1) {
+            printf("\n");
+            printf("+-----------------------------------+\n");
+            printf("|           ~~~* * * * *~~~         |\n");
+            printf("|         CHOISISSEZ UN STARTER     |\n");
+            printf("|           ~~~* * * * *~~~         |\n");
+            printf("+-----------------------------------+\n");
+            printf("|                                   |\n");
+            printf("|      [1] Charmander (Feu)         |\n");
+            printf("|      [2] Squirtle   (Eau)         |\n");
+            printf("|      [3] Bulbasaur  (Plante)      |\n");
+            printf("|                                   |\n");
+            printf("+-----------------------------------+\n");
+            printf("Votre choix : ");
 
-        result = scanf("%d", &starterChoice);
-        if (result != 1) {
-            printf("Entrée invalide !\n");
-            while (getchar() != '\n'); // On vide le buffer
-            continue; // On redemande la saisie
-        }
+            result = scanf("%d", &starterChoice);
+            if (result != 1) {
+                printf("Entrée invalide !\n");
+                while (getchar() != '\n'); // On vide le buffer
+                continue; // On redemande la saisie
+            }
 
-        // Valider la plage de valeurs (ici, il semble que seuls 1 à 3 soient valides)
-        if (starterChoice < 1 || starterChoice > 3) {
-            printf("Choix invalide ! Veuillez sélectionner un nombre entre 1 et 3.\n");
-            continue; // On redemande la saisie
-        }
+            // Valider la plage de valeurs (ici, il semble que seuls 1 à 3 soient valides)
+            if (starterChoice < 1 || starterChoice > 3) {
+                printf("Choix invalide ! Veuillez sélectionner un nombre entre 1 et 3.\n");
+                continue; // On redemande la saisie
+            }
 
-        // Traitement du choix valide
-        switch (starterChoice) {
-            case 1:
-                player.pokemons[player.numPokemons++] = charmander;
-            printf("Vous avez choisi Charmander !\n");
-            break;
-            case 2:
-                player.pokemons[player.numPokemons++] = squirtle;
-            printf("Vous avez choisi Squirtle !\n");
-            break;
-            case 3:
-                player.pokemons[player.numPokemons++] = bulbasaur;
-            printf("Vous avez choisi Bulbasaur !\n");
-            break;
+            // Traitement du choix valide
+            switch (starterChoice) {
+                case 1:
+                    player.pokemons[player.numPokemons++] = charmander;
+                printf("Vous avez choisi Charmander !\n");
+                break;
+                case 2:
+                    player.pokemons[player.numPokemons++] = squirtle;
+                printf("Vous avez choisi Squirtle !\n");
+                break;
+                case 3:
+                    player.pokemons[player.numPokemons++] = bulbasaur;
+                printf("Vous avez choisi Bulbasaur !\n");
+                break;
+            }
+            break; // Sortir de la boucle après un choix valide
         }
-        break; // Sortir de la boucle après un choix valide
     }
 
 
