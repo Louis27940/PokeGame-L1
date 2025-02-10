@@ -29,7 +29,7 @@ typedef struct {
     int numPokemons;
 } Player;
 
-void showInventory(Player *player);
+void showInventory(Player *player, Pokemon *ally);
 void showPokemons(Player *player);
 void healPokemons(Player *player);
 

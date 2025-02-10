@@ -7,12 +7,40 @@
 #include <stdlib.h>
 #include <string.h>
 
-void showInventory(Player *player) {
+#include "combat.h"
+#include "shop.h"
+
+#define RED "\x1B[31m"
+#define GREEN "\x1B[32m"
+#define YELLOW "\x1B[33m"
+#define BLUE "\x1B[34m"
+#define RESET "\x1B[0m"
+
+void showInventory(Player *player, Pokemon *ally) {
     printf("Votre inventaire:\n");
-    printf("Potion: %d\n", player->potion);
-    printf("Super Potion: %d\n", player->superPotion);
-    printf("Rare Candy: %d\n", player->rareCandy);
-    printf("Supcoins: %d\n", player->supcoins);
+    printf(BLUE"Potion: %d\n"RESET, player->potion);
+    printf(GREEN"Super Potion: %d\n"RESET, player->superPotion);
+    printf(RED"Rare Candy: %d\n"RESET, player->rareCandy);
+    printf(YELLOW"Supcoins: %d\n"RESET, player->supcoins);
+    printf("Souhaitez vous utiliser un bonbon sur votre pokemon actif ? (o/n) :");
+    char choice;
+    scanf(" %c", &choice);
+    switch (choice) {
+        case 'o':
+            if (player->rareCandy > 0) {
+                printf("Vous utilisez un Rare Candy !\n");
+                candyLevelUp(ally);  // Utilise le Rare Candy pour faire monter de niveau le Pokémon en combat
+                player->rareCandy--;
+            } else {
+                printf("Vous n'avez pas de Rare Candy.\n");
+            }
+        break;
+        case 'n':
+            break;
+        default:
+            printf("Choix invalide.\n");
+        break;
+    }
 }
 
 void showPokemons(Player *player) {

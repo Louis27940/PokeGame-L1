@@ -167,7 +167,7 @@ int main() {
             handleItemTransaction(&player, itemChoice, (choiceBuyorSell == 1));
             break;
             case 3:
-                showInventory(&player);
+                showInventory(&player, &player.pokemons[0]);
             break;
             case 4:
                 showPokemons(&player);

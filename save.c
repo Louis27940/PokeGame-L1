@@ -40,7 +40,7 @@ void saveGameText(const Player *player, const char *username) {
     }
 
     fclose(fp);
-    printf("Sauvegarde effectuée dans le fichier '%s'.\n", filename);
+    printf("Sauvegarde effectuee dans le fichier '%s'.\n", filename);
 }
 
 int loadGameText(Player *player, const char *username) {
@@ -95,6 +95,6 @@ int loadGameText(Player *player, const char *username) {
     }
 
     fclose(fp);
-    printf("Sauvegarde chargée depuis le fichier '%s'.\n", filename);
+    printf("Sauvegarde chargee depuis le fichier '%s'.\n", filename);
     return 1;
 }

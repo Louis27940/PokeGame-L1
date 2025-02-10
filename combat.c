@@ -64,7 +64,7 @@ void battle(Player *player, Pokemon wild) {
     printf(RED "Niveau: %d\n" RESET, wild.level);
     printf("Stats du %s: ", wild.name);
     printHpBar(wild);
-    printf("\nAttaque: %d | Défense: %d | Vitesse: %d\n",
+    printf("\nAttaque: %d | Defense: %d | Vitesse: %d\n",
            wild.attack, wild.defense, wild.speed);
 
     while (ally->hp > 0 && wild.hp > 0) {
@@ -93,7 +93,7 @@ void battle(Player *player, Pokemon wild) {
                 wild.hp -= damage;
                 if (wild.hp < 0)
                     wild.hp = 0;
-                printf("Vous attaquez %s ! Dégâts: %d, HP restant: %d\n",
+                printf("Vous attaquez %s ! Degats: %d, HP restant: %d\n",
                        wild.name, damage, wild.hp);
             } break;
 
@@ -104,10 +104,10 @@ void battle(Player *player, Pokemon wild) {
                     dodgeRate = 1.0f;
                 float chance = (float)rand() / (float)RAND_MAX;
                 if (chance < dodgeRate) {
-                    printf("Esquive réussie ! Vous évitez l'attaque ennemie.\n");
+                    printf("Esquive reussie ! Vous evitez l'attaque ennemie.\n");
                     continue; // Passe directement au prochain tour
                 } else {
-                    printf("Esquive échouée !\n");
+                    printf("Esquive echouee !\n");
                 }
             } break;
 
@@ -122,7 +122,12 @@ void battle(Player *player, Pokemon wild) {
                     switch (itemChoice) {
                         case 1:
                             if (player->potion > 0) {
-                                ally->hp += 5;
+                                if (ally->hp + 5 > ally->maxHp) {
+                                    ally->hp = ally->maxHp;
+                                }
+                                else {
+                                    ally->hp += 5;
+                                }
                                 printf("Vous utilisez une Potion !\n");
                                 player->potion--;
                                 itemUsed++;
@@ -132,7 +137,12 @@ void battle(Player *player, Pokemon wild) {
                         break;
                         case 2:
                             if (player->superPotion > 0) {
-                                ally->hp += 10;
+                                if (ally->hp + 10 > ally->maxHp) {
+                                    ally->hp = ally->maxHp;
+                                }
+                                else {
+                                    ally->hp += 10;
+                                }
                                 printf("Vous utilisez une Super Potion !\n");
                                 player->superPotion--;
                                 itemUsed++;
@@ -164,11 +174,11 @@ void battle(Player *player, Pokemon wild) {
                     captureRate = 0;
                 float chance = (float)rand() / (float)RAND_MAX;
                 if (chance < captureRate) {
-                    printf("Capture réussie ! Vous avez capturé %s !\n", wild.name);
+                    printf("Capture reussie ! Vous avez capture %s !\n", wild.name);
                     player->pokemons[player->numPokemons++] = wild;
                     return;  // Fin du combat
                 } else {
-                    printf("La capture a échoué.\n");
+                    printf("La capture a echoue.\n");
                 }
             } break;
 
@@ -177,10 +187,10 @@ void battle(Player *player, Pokemon wild) {
                 float successRate = (float)ally->speed / ((float)ally->speed + wild.speed);
                 float chance = (float)rand() / (float)RAND_MAX;
                 if (chance < successRate) {
-                    printf("Vous avez réussi à fuir !\n");
+                    printf("Vous avez reussi a fuir !\n");
                     return;  // Fin du combat
                 } else {
-                    printf("La fuite a échoué !\n");
+                    printf("La fuite a echoue !\n");
                 }
             } break;
 
@@ -190,10 +200,10 @@ void battle(Player *player, Pokemon wild) {
         }
 
         if (wild.hp <= 0) {
-            printf("%s a été vaincu !\n", wild.name);
+            printf("%s a ete vaincu !\n", wild.name);
             int exp_gagnee = (rand() % 51) + 75;
             ally->exp += exp_gagnee;
-            printf("%s a gagné %d points d'expérience\n", ally->name, exp_gagnee);
+            printf("%s a gagne %d points d'experience\n", ally->name, exp_gagnee);
             levelUp(ally);
             break;
         }
@@ -204,7 +214,7 @@ void battle(Player *player, Pokemon wild) {
             ally->hp -= damage;
             if (ally->hp < 0)
                 ally->hp = 0;
-            printf("Dégâts: %d, HP restant: %d\n", damage, ally->hp);
+            printf("Degats: %d, HP restant: %d\n", damage, ally->hp);
 
             if (ally->hp <= 0) {
                 printf("Vous avez perdu le combat.\n");
@@ -256,7 +266,7 @@ void levelUp(Pokemon *pokemon) {
         pokemon->accuracy = roundStat(pokemon->accuracy * 1.3);
         pokemon->evasion  = roundStat(pokemon->evasion  * 1.3);
         pokemon->hp = pokemon->maxHp; // Soins complets après level-up
-        printf("%s est passé au niveau %d !\n", pokemon->name, pokemon->level);
+        printf("%s est passe au niveau %d !\n", pokemon->name, pokemon->level);
     }
 }
 
@@ -272,13 +282,13 @@ void candyLevelUp(Pokemon *pokemon) {
     pokemon->accuracy = roundStat(pokemon->accuracy * 1.3);
     pokemon->evasion  = roundStat(pokemon->evasion  * 1.3);
     pokemon->hp = pokemon->maxHp;
-    printf("%s est passé au niveau %d grâce au Rare Candy !\n", pokemon->name, pokemon->level);
+    printf("%s est passe au niveau %d grace au Rare Candy !\n", pokemon->name, pokemon->level);
 }
 
 
 void exploreNature(Player *player) {
     if (player->numPokemons == 0) {
-        printf("Vous devez avoir au moins un Pokémon pour explorer.\n");
+        printf("Vous devez avoir au moins un Pokemon pour explorer.\n");
         return;
     }
     Pokemon wild = generateWildPokemon(player->pokemons[0]);
