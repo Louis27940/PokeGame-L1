@@ -14,11 +14,14 @@
 #define GREEN "\x1B[32m"
 #define YELLOW "\x1B[33m"
 #define BLUE "\x1B[34m"
+#define BROWN "\x1B[38;5;94m"
+#define MAGENTA "\x1B[35m"
+#define CYAN "\x1B[36m"
 #define RESET "\x1B[0m"
 
 void showInventory(Player *player, Pokemon *ally) {
     printf("Votre inventaire:\n");
-    printf(BLUE"Potion: %d\n"RESET, player->potion);
+    printf(CYAN"Potion: %d\n"RESET, player->potion);
     printf(GREEN"Super Potion: %d\n"RESET, player->superPotion);
     printf(RED"Rare Candy: %d\n"RESET, player->rareCandy);
     printf(YELLOW"Supcoins: %d\n"RESET, player->supcoins);

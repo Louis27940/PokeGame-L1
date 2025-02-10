@@ -11,6 +11,9 @@
 #define GREEN "\x1B[32m"
 #define YELLOW "\x1B[33m"
 #define BLUE "\x1B[34m"
+#define BROWN "\x1B[38;5;94m"
+#define MAGENTA "\x1B[35m"
+#define CYAN "\x1B[36m"
 #define RESET "\x1B[0m"
 
 // Affichage stylisé des barres de HP
@@ -47,6 +50,14 @@ Pokemon generateWildPokemon(Pokemon playerPokemon) {
     wild.accuracy = (rand() % 5) + 1;
     wild.evasion = (rand() % 5) + 1;
     wild.exp = 0;
+    switch (index) {
+        case 0 : wild.type = "Electric"; break;
+        case 1 : wild.type = "Normal"; break;
+        case 2 : wild.type = "Poison"; break;
+        case 3 : wild.type = "Water"; break;
+        case 4 : wild.type = "Ground"; break;
+        default : wild.type = "Normal"; break;
+    }
 
     snprintf(wild.name, sizeof(wild.name), "%s", names[index]);
     return wild;
@@ -116,7 +127,7 @@ void battle(Player *player, Pokemon wild) {
                 int itemUsed = 0;
                 if (itemUsed < 5) {
                     printf("Quel objet souhaitez-vous utiliser ?\n");
-                    printf(BLUE "1 - Potion (+5 HP) Restant : %d\n" RESET GREEN "2 - Super Potion (+10 HP) Restant : %d\n" RESET RED "3 - Rare Candy (+1 lvl) Restant : %d\n" RESET , player->potion, player->superPotion, player->rareCandy);
+                    printf(CYAN "1 - Potion (+5 HP) Restant : %d\n" RESET GREEN "2 - Super Potion (+10 HP) Restant : %d\n" RESET RED "3 - Rare Candy (+1 lvl) Restant : %d\n" RESET , player->potion, player->superPotion, player->rareCandy);
                     scanf("%d", &itemChoice);
 
                     switch (itemChoice) {
@@ -128,11 +139,11 @@ void battle(Player *player, Pokemon wild) {
                                 else {
                                     ally->hp += 5;
                                 }
-                                printf("Vous utilisez une Potion !\n");
+                                printf("Vous utilisez une "CYAN"Potion"RESET" !\n");
                                 player->potion--;
                                 itemUsed++;
                             } else {
-                                printf("Vous n'avez pas de Potion.\n");
+                                printf("Vous n'avez pas de "CYAN"Potion"RESET".\n");
                             }
                         break;
                         case 2:
@@ -143,21 +154,21 @@ void battle(Player *player, Pokemon wild) {
                                 else {
                                     ally->hp += 10;
                                 }
-                                printf("Vous utilisez une Super Potion !\n");
+                                printf("Vous utilisez une "GREEN"Super Potion"RESET" !\n");
                                 player->superPotion--;
                                 itemUsed++;
                             } else {
-                                printf("Vous n'avez pas de Super Potion.\n");
+                                printf("Vous n'avez pas de "GREEN"Super Potion"RESET".\n");
                             }
                         break;
                         case 3:
                             if (player->rareCandy > 0) {
-                                printf("Vous utilisez un Rare Candy !\n");
+                                printf("Vous utilisez un "RED"Rare Candy"RESET" !\n");
                                 candyLevelUp(ally);  // Utilise le Rare Candy pour faire monter de niveau le Pokémon en combat
                                 player->rareCandy--;
                                 itemUsed++;
                             } else {
-                                printf("Vous n'avez pas de Rare Candy.\n");
+                                printf("Vous n'avez pas de "RED"Rare Candy"RESET".\n");
                             }
                         break;
                         default:
@@ -217,7 +228,7 @@ void battle(Player *player, Pokemon wild) {
             printf("Degats: %d, HP restant: %d\n", damage, ally->hp);
 
             if (ally->hp <= 0) {
-                printf("Vous avez perdu le combat.\n");
+                printf(RED"Vous avez perdu le combat.\n"RESET);
                 break;
             }
         }
@@ -282,7 +293,7 @@ void candyLevelUp(Pokemon *pokemon) {
     pokemon->accuracy = roundStat(pokemon->accuracy * 1.3);
     pokemon->evasion  = roundStat(pokemon->evasion  * 1.3);
     pokemon->hp = pokemon->maxHp;
-    printf("%s est passe au niveau %d grace au Rare Candy !\n", pokemon->name, pokemon->level);
+    printf("%s est passe au niveau %d grace au "RED"Rare Candy"RESET" !\n", pokemon->name, pokemon->level);
 }
 
 

@@ -18,6 +18,7 @@ typedef struct {
     int evasion;
     int level;
     int exp;
+    int type;
 } Pokemon;
 
 typedef struct {

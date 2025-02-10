@@ -13,6 +13,9 @@
 #define GREEN "\x1B[32m"
 #define YELLOW "\x1B[33m"
 #define BLUE "\x1B[34m"
+#define BROWN "\x1B[38;5;94m"
+#define MAGENTA "\x1B[35m"
+#define CYAN "\x1B[36m"
 #define RESET "\x1B[0m"
 
 int main() {
@@ -26,9 +29,9 @@ int main() {
     Player player = {0, 0, 0, 0, {}, 0};
 
 
-    Pokemon charmander = {RED "Charmander"RESET , 10, 10, 1, 1, 1, 2, 1, 1, 0};
-    Pokemon squirtle = {BLUE "Squirtle" RESET , 9, 9, 1, 1, 2, 2, 3, 1, 0};
-    Pokemon bulbasaur = {GREEN "Bulbasaur"RESET , 11, 11, 1, 2, 2, 1, 2, 1, 0};
+    Pokemon charmander = {RED"Charmander"RESET , 10, 10, 1, 1, 1, 2, 1, 1, 0, "Fire"};
+    Pokemon squirtle = {BLUE"Squirtle" RESET , 9, 9, 1, 1, 2, 2, 3, 1, 0, "Water"};
+    Pokemon bulbasaur = {GREEN"Bulbasaur"RESET , 11, 11, 1, 2, 2, 1, 2, 1, 0, "Grass"};
 
     printf("Bienvenue dans le jeu Pokemon !\n");
     printf("1. Nouvelle partie\n2. Charger une sauvegarde\nVotre choix : ");
@@ -162,7 +165,7 @@ int main() {
             case 2:
                 printf("1 - Acheter | 2 - Vendre\n");
             scanf("%d", &choiceBuyorSell);
-            printf("1 - Potion | 2 - Super Potion | 3 - Rare Candy\n");
+            printf(CYAN "1 - Potion "RESET"|"GREEN" 2 - Super Potion "RESET"|"RED" 3 - Rare Candy\n"RESET);
             scanf("%d", &itemChoice);
             handleItemTransaction(&player, itemChoice, (choiceBuyorSell == 1));
             break;

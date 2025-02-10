@@ -5,6 +5,15 @@
 #include "shop.h"
 #include <stdio.h>
 
+#define RED "\x1B[31m"
+#define GREEN "\x1B[32m"
+#define YELLOW "\x1B[33m"
+#define BLUE "\x1B[34m"
+#define BROWN "\x1B[38;5;94m"
+#define MAGENTA "\x1B[35m"
+#define CYAN "\x1B[36m"
+#define RESET "\x1B[0m"
+
 void handleItemTransaction(Player *player, int itemChoice, int isBuying) {
     int price = 0;
     char itemName[MAX_ITEM_NAME];
@@ -37,15 +46,15 @@ void handleItemTransaction(Player *player, int itemChoice, int isBuying) {
         if (player->supcoins >= price) {
             player->supcoins -= price;
             (*itemCount)++;
-            printf("Vous avez achete une %s pour %d Supcoins.\n", itemName, price);
+            printf("Vous avez achete une %s pour %d "YELLOW"Supcoins"RESET".\n", itemName, price);
         } else {
-            printf("Vous n'avez pas assez de Supcoins pour acheter une %s.\n", itemName);
+            printf("Vous n'avez pas assez de "YELLOW"Supcoins"RESET" pour acheter une %s.\n", itemName);
         }
     } else {
         if (*itemCount > 0) {
             player->supcoins += price;
             (*itemCount)--;
-            printf("Vous avez vendu une %s pour %d Supcoins.\n", itemName, price);
+            printf("Vous avez vendu une %s pour "YELLOW" %d Supcoins.\n"RESET, itemName, price);
         } else {
             printf("Vous n'avez pas de %s a vendre.\n", itemName);
         }
