@@ -6,6 +6,7 @@
 #define JOUEUR_H
 
 #define MAX_POKEMONS 10
+#define MAX_TYPE 10
 
 typedef struct {
     char name[20];
@@ -18,7 +19,7 @@ typedef struct {
     int evasion;
     int level;
     int exp;
-    int type;
+    char type[MAX_TYPE];
 } Pokemon;
 
 typedef struct {

@@ -4,17 +4,9 @@
 #include "combat.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "colors.h"
 
 #define BASE_MOVE_DAMAGE 5
-//Couleurs
-#define RED "\x1B[31m"
-#define GREEN "\x1B[32m"
-#define YELLOW "\x1B[33m"
-#define BLUE "\x1B[34m"
-#define BROWN "\x1B[38;5;94m"
-#define MAGENTA "\x1B[35m"
-#define CYAN "\x1B[36m"
-#define RESET "\x1B[0m"
 
 // Affichage stylisé des barres de HP
 void printHpBar(Pokemon p) {
@@ -69,7 +61,7 @@ void battle(Player *player, Pokemon wild) {
     Pokemon *ally = &player->pokemons[0];
 
     printf(YELLOW "\n=============================\n");
-    printf("  Un %s sauvage apparait ! \n", wild.name);
+    printf("Un %s%s%s sauvage apparait ! Niveau: %d\n", getTypeColor(&wild), wild.name, RESET, wild.level);
     printf("=============================\n" RESET);
 
     printf(RED "Niveau: %d\n" RESET, wild.level);
