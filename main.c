@@ -6,17 +6,9 @@
 #include "combat.h"
 #include "shop.h"
 #include "save.h"
+#include "colors.h"
 
 #define MAX_USERNAME 20
-
-#define RED "\x1B[31m"
-#define GREEN "\x1B[32m"
-#define YELLOW "\x1B[33m"
-#define BLUE "\x1B[34m"
-#define BROWN "\x1B[38;5;94m"
-#define MAGENTA "\x1B[35m"
-#define CYAN "\x1B[36m"
-#define RESET "\x1B[0m"
 
 int main() {
     srand(time(NULL));
@@ -29,9 +21,9 @@ int main() {
     Player player = {0, 0, 0, 0, {}, 0};
 
 
-    Pokemon charmander = {RED"Charmander"RESET , 10, 10, 1, 1, 1, 2, 1, 1, 0, "Fire"};
-    Pokemon squirtle = {BLUE"Squirtle" RESET , 9, 9, 1, 1, 2, 2, 3, 1, 0, "Water"};
-    Pokemon bulbasaur = {GREEN"Bulbasaur"RESET , 11, 11, 1, 2, 2, 1, 2, 1, 0, "Grass"};
+    Pokemon charmander = {"Charmander" , 10, 10, 1, 1, 1, 2, 1, 1, 0, "Fire"};
+    Pokemon squirtle = {"Squirtle" , 9, 9, 1, 1, 2, 2, 3, 1, 0, "Water"};
+    Pokemon bulbasaur = {"Bulbasaur" , 11, 11, 1, 2, 2, 1, 2, 1, 0, "Grass"};
 
     printf("Bienvenue dans le jeu Pokemon !\n");
     printf("1. Nouvelle partie\n2. Charger une sauvegarde\nVotre choix : ");

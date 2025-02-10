@@ -10,4 +10,5 @@ add_executable(main
         combat.c
         shop.c
         save.c
+        colors.c
 )

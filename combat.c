@@ -4,17 +4,10 @@
 #include "combat.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include "colors.h"
 
 #define BASE_MOVE_DAMAGE 5
-//Couleurs
-#define RED "\x1B[31m"
-#define GREEN "\x1B[32m"
-#define YELLOW "\x1B[33m"
-#define BLUE "\x1B[34m"
-#define BROWN "\x1B[38;5;94m"
-#define MAGENTA "\x1B[35m"
-#define CYAN "\x1B[36m"
-#define RESET "\x1B[0m"
 
 // Affichage stylisé des barres de HP
 void printHpBar(Pokemon p) {
@@ -35,12 +28,8 @@ Pokemon generateWildPokemon(Pokemon playerPokemon) {
 
     Pokemon wild = {
         .name = "",
-        .level = playerPokemon.level + (rand() % 3 - 1)
+        .level = playerPokemon.level
     };
-
-    if (wild.level < 1) {
-        wild.level = 1;
-    }
 
     wild.maxHp = playerPokemon.maxHp;
     wild.hp = wild.maxHp;
@@ -51,12 +40,12 @@ Pokemon generateWildPokemon(Pokemon playerPokemon) {
     wild.evasion = (rand() % 5) + 1;
     wild.exp = 0;
     switch (index) {
-        case 0 : wild.type = "Electric"; break;
-        case 1 : wild.type = "Normal"; break;
-        case 2 : wild.type = "Poison"; break;
-        case 3 : wild.type = "Water"; break;
-        case 4 : wild.type = "Ground"; break;
-        default : wild.type = "Normal"; break;
+        case 0 : strcpy(wild.type, "Electric"); break;
+        case 1 : strcpy(wild.type, "Normal"); break;
+        case 2 : strcpy(wild.type, "Poison"); break;
+        case 3 : strcpy(wild.type, "Water"); break;
+        case 4 : strcpy(wild.type, "Ground"); break;
+        default: strcpy(wild.type, "Normal"); break;
     }
 
     snprintf(wild.name, sizeof(wild.name), "%s", names[index]);
@@ -69,11 +58,11 @@ void battle(Player *player, Pokemon wild) {
     Pokemon *ally = &player->pokemons[0];
 
     printf(YELLOW "\n=============================\n");
-    printf("  Un %s sauvage apparait ! \n", wild.name);
+    printf("Un %s%s%s "YELLOW"sauvage apparait ! Niveau: %d\n", getTypeColor(&wild), wild.name, RESET, wild.level);
     printf("=============================\n" RESET);
 
     printf(RED "Niveau: %d\n" RESET, wild.level);
-    printf("Stats du %s: ", wild.name);
+    printf("Stats du %s%s%s: ", getTypeColor(&wild), wild.name, RESET);
     printHpBar(wild);
     printf("\nAttaque: %d | Defense: %d | Vitesse: %d\n",
            wild.attack, wild.defense, wild.speed);
@@ -85,7 +74,7 @@ void battle(Player *player, Pokemon wild) {
         printf("Votre tour !\n");
         printf("-----------------------------\n" RESET);
 
-        printf("%s | ", ally->name);
+        printf("%s%s%s | ", getTypeColor(ally), ally->name, RESET);
         printHpBar(*ally);
         printf("\n\n");
 
@@ -104,8 +93,8 @@ void battle(Player *player, Pokemon wild) {
                 wild.hp -= damage;
                 if (wild.hp < 0)
                     wild.hp = 0;
-                printf("Vous attaquez %s ! Degats: %d, HP restant: %d\n",
-                       wild.name, damage, wild.hp);
+                printf("Vous attaquez %s%s%s ! Degats: %d, HP restant: %d\n",
+                       getTypeColor(&wild), wild.name, RESET, damage, wild.hp);
             } break;
 
             case 2: {  // Esquiver
@@ -211,16 +200,19 @@ void battle(Player *player, Pokemon wild) {
         }
 
         if (wild.hp <= 0) {
-            printf("%s a ete vaincu !\n", wild.name);
-            int exp_gagnee = (rand() % 51) + 75;
+            printf("%s%s%s a ete vaincu !\n", getTypeColor(&wild), wild.name, RESET);
+            int exp_gagnee = (rand() % (500 - 100 + 1)) + 100;
+            int coin_gagnee = (rand() % (500 - 100 + 1)) + 100;
             ally->exp += exp_gagnee;
-            printf("%s a gagne %d points d'experience\n", ally->name, exp_gagnee);
+            player->supcoins += coin_gagnee;
+            printf("Vous avez gagné %d "YELLOW"Supcoins"RESET, coin_gagnee);
+            printf("%s%s%s a gagne %d points d'experience\n", getTypeColor(ally), ally->name, RESET, exp_gagnee);
             levelUp(ally);
             break;
         }
 
         if (wild.hp > 0) {
-            printf("%s attaque %s !\n", wild.name, ally->name);
+            printf("%s%s%s attaque %s%s%s !\n", getTypeColor(&wild), wild.name, RESET, getTypeColor(ally), ally->name, RESET);
             int damage = calculateDamage(wild.attack, ally->defense);
             ally->hp -= damage;
             if (ally->hp < 0)
@@ -276,8 +268,8 @@ void levelUp(Pokemon *pokemon) {
         pokemon->speed   = roundStat(pokemon->speed   * 1.3);
         pokemon->accuracy = roundStat(pokemon->accuracy * 1.3);
         pokemon->evasion  = roundStat(pokemon->evasion  * 1.3);
-        pokemon->hp = pokemon->maxHp; // Soins complets après level-up
-        printf("%s est passe au niveau %d !\n", pokemon->name, pokemon->level);
+        pokemon->hp = pokemon->maxHp; // Soins complets après level up
+        printf("%s%s%s est passe au niveau %d !\n", getTypeColor(pokemon), pokemon->name, RESET, pokemon->level);
     }
 }
 
@@ -293,7 +285,7 @@ void candyLevelUp(Pokemon *pokemon) {
     pokemon->accuracy = roundStat(pokemon->accuracy * 1.3);
     pokemon->evasion  = roundStat(pokemon->evasion  * 1.3);
     pokemon->hp = pokemon->maxHp;
-    printf("%s est passe au niveau %d grace au "RED"Rare Candy"RESET" !\n", pokemon->name, pokemon->level);
+    printf("%s%s%s est passe au niveau %d grace au "RED"Rare Candy"RESET" !\n", getTypeColor(pokemon), pokemon->name, RESET, pokemon->level);
 }
 
 
