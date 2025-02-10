@@ -20,7 +20,7 @@ int main() {
     Player player = {0, 0, 0, 0, {}, 0};
 
 
-    Pokemon charmander = {"Charmander", 10, 10, 1, 1, 1, 2, 100, 1, 0};
+    Pokemon charmander = {"Charmander", 10, 10, 1, 1, 1, 2, 1, 1, 0};
     Pokemon squirtle = {"Squirtle", 9, 9, 1, 1, 2, 2, 3, 1, 0};
     Pokemon bulbasaur = {"Bulbasaur", 11, 11, 1, 2, 2, 1, 2, 1, 0};
 
@@ -64,9 +64,9 @@ int main() {
 
     if (strcmp(Username, "ADMIN") == 0) {
         player.supcoins = 999999;
-        player.potion = 20;
-        player.superPotion = 20;
-        player.rareCandy = 20;
+        player.potion = 99;
+        player.superPotion = 99;
+        player.rareCandy = 99;
     }
 
     printf("Bienvenue %s dans le monde Pokemon !\n", Username);

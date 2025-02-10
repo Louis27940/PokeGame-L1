@@ -25,6 +25,9 @@ void showPokemons(Player *player) {
             printf("  HP: %d/%d\n", player->pokemons[i].hp, player->pokemons[i].maxHp);
             printf("  Attaque: %d\n", player->pokemons[i].attack);
             printf("  Defense: %d\n", player->pokemons[i].defense);
+            printf("  Vitesse: %d\n", player->pokemons[i].speed);
+            printf("  Accuracie: %d\n", player->pokemons[i].accuracy);
+            printf("  Evasion: %d\n", player->pokemons[i].evasion);
             printf("  Niveau: %d\n", player->pokemons[i].level);
             printf("  Exp: %d\n\n", player->pokemons[i].exp);
         }
