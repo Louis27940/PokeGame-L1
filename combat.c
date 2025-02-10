@@ -6,6 +6,25 @@
 #include <stdlib.h>
 
 #define BASE_MOVE_DAMAGE 5
+//Couleurs
+#define RED "\x1B[31m"
+#define GREEN "\x1B[32m"
+#define YELLOW "\x1B[33m"
+#define BLUE "\x1B[34m"
+#define RESET "\x1B[0m"
+
+// Affichage stylisé des barres de HP
+void printHpBar(Pokemon p) {
+    printf(GREEN "[" RESET );
+    int hpPercent = (p.hp * 10) / p.maxHp; // Échelle sur 10
+    for (int i = 0; i < 10; i++) {
+        if (i < hpPercent)
+            printf(GREEN "|" RESET );
+        else
+            printf(RED "|" RESET );
+    }
+    printf(GREEN "] %d/%d" RESET, p.hp, p.maxHp);
+}
 
 Pokemon generateWildPokemon(Pokemon playerPokemon) {
     char *names[] = {"Pikachu", "Eevee", "Rattata", "Zubat", "Geodude"};
@@ -36,22 +55,36 @@ Pokemon generateWildPokemon(Pokemon playerPokemon) {
 /* On ne passe plus de Pokémon à levelUp via un paramètre additionnel :
    on utilise le Pokémon en combat (ally) */
 void battle(Player *player, Pokemon wild) {
-    // On utilise le premier Pokémon du joueur comme combattant
     Pokemon *ally = &player->pokemons[0];
 
-    printf("Un %s sauvage apparait ! Niveau: %d\n", wild.name, wild.level);
-    printf("Stats du %s: HP: %d/%d, Attaque: %d, Defense: %d, Vitesse: %d\n",
-           wild.name, wild.hp, wild.maxHp, wild.attack, wild.defense, wild.speed);
+    printf(YELLOW "\n=============================\n");
+    printf("  Un %s sauvage apparait ! \n", wild.name);
+    printf("=============================\n" RESET);
+
+    printf(RED "Niveau: %d\n" RESET, wild.level);
+    printf("Stats du %s: ", wild.name);
+    printHpBar(wild);
+    printf("\nAttaque: %d | Défense: %d | Vitesse: %d\n",
+           wild.attack, wild.defense, wild.speed);
 
     while (ally->hp > 0 && wild.hp > 0) {
         int action;
-        printf("\nVotre tour !\n");
-        printf("Que voulez-vous faire ?\n");
-        printf("1 - Attaquer\n");
-        printf("2 - Esquiver\n");
-        printf("3 - Utiliser un objet\n");
-        printf("4 - Capturer\n");
-        printf("5 - Fuir\n");
+
+        printf(BLUE "\n-----------------------------\n");
+        printf("Votre tour !\n");
+        printf("-----------------------------\n" RESET);
+
+        printf("%s | ", ally->name);
+        printHpBar(*ally);
+        printf("\n\n");
+
+        printf("1- Attaquer\n");
+        printf("2- Esquiver\n");
+        printf("3- Utiliser un objet\n");
+        printf("4- Capturer\n");
+        printf("5- Fuir\n");
+        printf(YELLOW "Choisissez une action: " RESET);
+
         scanf("%d", &action);
 
         switch (action) {
@@ -80,41 +113,47 @@ void battle(Player *player, Pokemon wild) {
 
             case 3: {  // Utiliser un objet
                 int itemChoice;
-                printf("Quel objet souhaitez-vous utiliser ?\n");
-                printf("1 - Potion (+5 HP) Restant : %d\n2 - Super Potion (+10 HP) Restant : %d\n3 - Rare Candy (+1 lvl) Restant : %d\n", player->potion, player->superPotion, player->rareCandy);
-                scanf("%d", &itemChoice);
+                int itemUsed = 0;
+                if (itemUsed < 5) {
+                    printf("Quel objet souhaitez-vous utiliser ?\n");
+                    printf(BLUE "1 - Potion (+5 HP) Restant : %d\n" RESET GREEN "2 - Super Potion (+10 HP) Restant : %d\n" RESET RED "3 - Rare Candy (+1 lvl) Restant : %d\n" RESET , player->potion, player->superPotion, player->rareCandy);
+                    scanf("%d", &itemChoice);
 
-                switch (itemChoice) {
-                    case 1:
-                        if (player->potion > 0) {
-                            ally->hp += 5;
-                            printf("Vous utilisez une Potion !\n");
-                            player->potion--;
-                        } else {
-                            printf("Vous n'avez pas de Potion.\n");
-                        }
+                    switch (itemChoice) {
+                        case 1:
+                            if (player->potion > 0) {
+                                ally->hp += 5;
+                                printf("Vous utilisez une Potion !\n");
+                                player->potion--;
+                                itemUsed++;
+                            } else {
+                                printf("Vous n'avez pas de Potion.\n");
+                            }
                         break;
-                    case 2:
-                        if (player->superPotion > 0) {
-                            ally->hp += 10;
-                            printf("Vous utilisez une Super Potion !\n");
-                            player->superPotion--;
-                        } else {
-                            printf("Vous n'avez pas de Super Potion.\n");
-                        }
+                        case 2:
+                            if (player->superPotion > 0) {
+                                ally->hp += 10;
+                                printf("Vous utilisez une Super Potion !\n");
+                                player->superPotion--;
+                                itemUsed++;
+                            } else {
+                                printf("Vous n'avez pas de Super Potion.\n");
+                            }
                         break;
-                    case 3:
-                        if (player->rareCandy > 0) {
-                            printf("Vous utilisez un Rare Candy !\n");
-                            candyLevelUp(ally);  // Utilise le Rare Candy pour faire monter de niveau le Pokémon en combat
-                            player->rareCandy--;
-                        } else {
-                            printf("Vous n'avez pas de Rare Candy.\n");
-                        }
+                        case 3:
+                            if (player->rareCandy > 0) {
+                                printf("Vous utilisez un Rare Candy !\n");
+                                candyLevelUp(ally);  // Utilise le Rare Candy pour faire monter de niveau le Pokémon en combat
+                                player->rareCandy--;
+                                itemUsed++;
+                            } else {
+                                printf("Vous n'avez pas de Rare Candy.\n");
+                            }
                         break;
-                    default:
-                        printf("Choix invalide.\n");
+                        default:
+                            printf("Choix invalide.\n");
                         break;
+                    }
                 }
             } break;
 

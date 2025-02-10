@@ -9,6 +9,12 @@
 
 #define MAX_USERNAME 20
 
+#define RED "\x1B[31m"
+#define GREEN "\x1B[32m"
+#define YELLOW "\x1B[33m"
+#define BLUE "\x1B[34m"
+#define RESET "\x1B[0m"
+
 int main() {
     srand(time(NULL));
     char Username[MAX_USERNAME];
@@ -20,9 +26,9 @@ int main() {
     Player player = {0, 0, 0, 0, {}, 0};
 
 
-    Pokemon charmander = {"Charmander", 10, 10, 1, 1, 1, 2, 1, 1, 0};
-    Pokemon squirtle = {"Squirtle", 9, 9, 1, 1, 2, 2, 3, 1, 0};
-    Pokemon bulbasaur = {"Bulbasaur", 11, 11, 1, 2, 2, 1, 2, 1, 0};
+    Pokemon charmander = {RED "Charmander"RESET , 10, 10, 1, 1, 1, 2, 1, 1, 0};
+    Pokemon squirtle = {BLUE "Squirtle" RESET , 9, 9, 1, 1, 2, 2, 3, 1, 0};
+    Pokemon bulbasaur = {GREEN "Bulbasaur"RESET , 11, 11, 1, 2, 2, 1, 2, 1, 0};
 
     printf("Bienvenue dans le jeu Pokemon !\n");
     printf("1. Nouvelle partie\n2. Charger une sauvegarde\nVotre choix : ");
@@ -39,7 +45,7 @@ int main() {
         while(getchar() != '\n');
 
         if (!loadGameText(&player, Username)) {
-            printf("La sauvegarde n'a pas pu être chargée. Une nouvelle partie sera créée.\n");
+            printf("La sauvegarde n'a pas pu être chargee. Une nouvelle partie sera cree.\n");
             /* Initialisation par défaut pour une nouvelle partie */
             player.supcoins = 100;
             player.potion = 5;
@@ -74,17 +80,17 @@ int main() {
     if (player.numPokemons == 0) {
         while (1) {
             printf("\n");
-            printf("+-----------------------------------+\n");
-            printf("|           ~~~* * * * *~~~         |\n");
-            printf("|         CHOISISSEZ UN STARTER     |\n");
-            printf("|           ~~~* * * * *~~~         |\n");
-            printf("+-----------------------------------+\n");
-            printf("|                                   |\n");
-            printf("|      [1] Charmander (Feu)         |\n");
-            printf("|      [2] Squirtle   (Eau)         |\n");
-            printf("|      [3] Bulbasaur  (Plante)      |\n");
-            printf("|                                   |\n");
-            printf("+-----------------------------------+\n");
+            printf("+----------------------------------------+\n");
+            printf("|            "YELLOW"~~~* * * * *~~~"RESET"             |\n");
+            printf("|         CHOISISSEZ UN STARTER          |\n");
+            printf("|            "YELLOW"~~~* * * * *~~~"RESET"             |\n");
+            printf("+----------------------------------------+\n");
+            printf("|                                        |\n");
+            printf("|      [1] "RED"Charmander"RESET"  (Feu)             |\n");
+            printf("|      [2] "BLUE"Squirtel"RESET"    (Eau)             |\n");
+            printf("|      [3] "GREEN"Bulbasaur"RESET"   (Plante)          |\n");
+            printf("|                                        |\n");
+            printf("+----------------------------------------+\n");
             printf("Votre choix : ");
 
             result = scanf("%d", &starterChoice);
@@ -104,15 +110,15 @@ int main() {
             switch (starterChoice) {
                 case 1:
                     player.pokemons[player.numPokemons++] = charmander;
-                printf("Vous avez choisi Charmander !\n");
+                printf("Vous avez choisi "RED"Charmander"RESET" !\n");
                 break;
                 case 2:
                     player.pokemons[player.numPokemons++] = squirtle;
-                printf("Vous avez choisi Squirtle !\n");
+                printf("Vous avez choisi "BLUE"Squirtle"RESET" !\n");
                 break;
                 case 3:
                     player.pokemons[player.numPokemons++] = bulbasaur;
-                printf("Vous avez choisi Bulbasaur !\n");
+                printf("Vous avez choisi "GREEN"Bulbasaur"RESET" !\n");
                 break;
             }
             break; // Sortir de la boucle après un choix valide
