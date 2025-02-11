@@ -7,7 +7,6 @@
 #include <string.h>
 #include "colors.h"
 
-#define BASE_MOVE_DAMAGE 5
 
 // Affichage stylisé des barres de HP
 void printHpBar(Pokemon p) {
@@ -22,7 +21,7 @@ void printHpBar(Pokemon p) {
     printf(GREEN "] %d/%d" RESET, p.hp, p.maxHp);
 }
 
-Pokemon generateWildPokemon(Pokemon playerPokemon) {
+    Pokemon generateWildPokemon(Pokemon playerPokemon) {
     char *names[] = {"Pikachu", "Eevee", "Rattata", "Zubat", "Geodude"};
     int index = rand() % 5;
 
@@ -40,20 +39,65 @@ Pokemon generateWildPokemon(Pokemon playerPokemon) {
     wild.evasion = (rand() % 5) + 1;
     wild.exp = 0;
     switch (index) {
-        case 0 : strcpy(wild.type, "Electric"); break;
-        case 1 : strcpy(wild.type, "Normal"); break;
-        case 2 : strcpy(wild.type, "Poison"); break;
-        case 3 : strcpy(wild.type, "Water"); break;
-        case 4 : strcpy(wild.type, "Ground"); break;
-        default: strcpy(wild.type, "Normal"); break;
-    }
+        case 0:  // Pikachu
+            strcpy(wild.type, "Electric");
+            wild.attacks[0] = (Attack){"Eclair", 2, 0, 0, 0};
+            wild.attacks[1] = (Attack){"Coup de Queue", 1, 0, 2, 0};
+            wild.attacks[2] = (Attack){"Tonnerre", 3, 1, 0, 0};
+            wild.attacks[3] = (Attack){"Vive-Attaque", 1, 0, 0, 1};
+            wild.numAttacks = 4;
+            break;
+
+        case 1:  // Eevee
+            strcpy(wild.type, "Normal");
+            wild.attacks[0] = (Attack){"Charge", 1, 0, 0, 0};
+            wild.attacks[1] = (Attack){"Morsure", 2, 0, 0, 1};
+            wild.attacks[2] = (Attack){"Jet de Sable", 0, 0, 0, 2};
+            wild.attacks[3] = (Attack){"Coup de Boule", 3, 0, 1, 0};
+            wild.numAttacks = 4;
+            break;
+
+        case 2:  // Rattata
+            strcpy(wild.type, "Poison");
+            wild.attacks[0] = (Attack){"Morsure", 3, 0, 0, 0};
+            wild.attacks[1] = (Attack){"Vive-Attaque", 1, 0, 0, 1};
+            wild.attacks[2] = (Attack){"Hate", 0, 0, 0, 2};
+            wild.attacks[3] = (Attack){"Crochet Venin", 2, 1, 0, 0};
+            wild.numAttacks = 4;
+            break;
+
+        case 3:  // Zubat
+            strcpy(wild.type, "Water");
+            wild.attacks[0] = (Attack){"Ultrason", 0, 0, 0, 3};
+            wild.attacks[1] = (Attack){"Piqure", 1, 0, 0, 0};
+            wild.attacks[2] = (Attack){"Aile d'Acier", 3, 1, 0, 0};
+            wild.attacks[3] = (Attack){"Morsure", 2, 0, 0, 1};
+            wild.numAttacks = 4;
+            break;
+
+        case 4:  // Geodude
+            strcpy(wild.type, "Ground");
+            wild.attacks[0] = (Attack){"Jet-Pierres", 2, 0, 0, 0};
+            wild.attacks[1] = (Attack){"Armure", 0, 0, 1, 0};
+            wild.attacks[2] = (Attack){"Eboulement", 3, 0, 0, 0};
+            wild.attacks[3] = (Attack){"Boul'Armure", 0, 0, 2, 0};
+            wild.numAttacks = 4;
+            break;
+
+        default:
+            strcpy(wild.type, "Normal");
+            wild.numAttacks = 0;
+            break;
 
     snprintf(wild.name, sizeof(wild.name), "%s", names[index]);
     return wild;
 }
 
-/* On ne passe plus de Pokémon à levelUp via un paramètre additionnel :
-   on utilise le Pokémon en combat (ally) */
+    snprintf(wild.name, sizeof(wild.name), "%s", names[index]);
+    return wild;
+}
+
+
 void battle(Player *player, Pokemon wild) {
     Pokemon *ally = &player->pokemons[0];
 
@@ -88,16 +132,50 @@ void battle(Player *player, Pokemon wild) {
         scanf("%d", &action);
 
         switch (action) {
-            case 1: {  // Attaquer
-                int damage = calculateDamage(ally->attack, wild.defense);
+            case 1: {
+                int attackChoice;
+                printf("Choisissez une attaque :\n");
+                for (int i = 0; i < ally->numAttacks; i++) {
+                    printf("  [%d] %s (Dégâts: %d, Attaque: +%d, Defence: +%d, Evasion: +%d)\n",
+                           i + 1, ally->attacks[i].name, ally->attacks[i].damage, ally->attacks[i].effect_attack, ally->attacks[i].effect_defence, ally->attacks[i].effect_evasion);
+                }
+                printf("Votre choix : ");
+                scanf("%d", &attackChoice);
+
+                if (attackChoice < 1 || attackChoice > ally->numAttacks) {
+                    printf("Choix invalide, attaque par defaut utilisee.\n");
+                    attackChoice = 1;
+                }
+
+                // Récupération de l'attaque choisie
+                Attack chosenAttack = ally->attacks[attackChoice - 1];
+
+                int damage = calculateDamage(ally->attack, chosenAttack.damage, wild.defense);
+
                 wild.hp -= damage;
                 if (wild.hp < 0)
                     wild.hp = 0;
+
+                printf("Vous utilisez %s !\n",
+                        chosenAttack.name);
+
+                if (chosenAttack.effect_attack > 0) {
+                    ally->attack += chosenAttack.effect_attack;
+                    printf("%s%s%s augmente son attaque de %d points !\n", getTypeColor(ally), ally->name, RESET, chosenAttack.effect_attack);
+                }
+                else if (chosenAttack.effect_defence > 0) {
+                    ally->defense += chosenAttack.effect_defence;
+                    printf("%s%s%s augmente sa defence de %d points !\n", getTypeColor(ally), ally->name, RESET, chosenAttack.effect_defence);
+                }
+                else if (chosenAttack.effect_evasion > 0) {
+                    ally->evasion += chosenAttack.effect_evasion;
+                    printf("%s%s%s augmente son evasion de %d points !\n", getTypeColor(ally), ally->name, RESET, chosenAttack.effect_evasion);
+                }
                 printf("Vous attaquez %s%s%s ! Degats: %d, HP restant: %d\n",
                        getTypeColor(&wild), wild.name, RESET, damage, wild.hp);
             } break;
 
-            case 2: {  // Esquiver
+            case 2: {
                 printf("Vous tentez d'esquiver !\n");
                 float dodgeRate = (float)wild.accuracy / ((float)wild.accuracy + (float)ally->evasion) + 0.1f;
                 if (dodgeRate > 1.0f)
@@ -111,7 +189,7 @@ void battle(Player *player, Pokemon wild) {
                 }
             } break;
 
-            case 3: {  // Utiliser un objet
+            case 3: {
                 int itemChoice;
                 int itemUsed = 0;
                 if (itemUsed < 5) {
@@ -167,7 +245,7 @@ void battle(Player *player, Pokemon wild) {
                 }
             } break;
 
-            case 4: {  // Capturer
+            case 4: {
                 printf("Vous tentez de capturer %s !\n", wild.name);
                 float captureRate = ((float)wild.maxHp - wild.hp) / ((float)wild.maxHp) - 0.5f;
                 if (captureRate < 0)
@@ -182,7 +260,7 @@ void battle(Player *player, Pokemon wild) {
                 }
             } break;
 
-            case 5: {  // Fuir
+            case 5: {
                 printf("Vous tentez de fuir !\n");
                 float successRate = (float)ally->speed / ((float)ally->speed + wild.speed);
                 float chance = (float)rand() / (float)RAND_MAX;
@@ -205,30 +283,63 @@ void battle(Player *player, Pokemon wild) {
             int coin_gagnee = (rand() % (500 - 100 + 1)) + 100;
             ally->exp += exp_gagnee;
             player->supcoins += coin_gagnee;
-            printf("Vous avez gagné %d "YELLOW"Supcoins"RESET, coin_gagnee);
+            printf("Vous avez gagne %d "YELLOW"Supcoins"RESET, coin_gagnee);
             printf("%s%s%s a gagne %d points d'experience\n", getTypeColor(ally), ally->name, RESET, exp_gagnee);
             levelUp(ally);
             break;
         }
 
         if (wild.hp > 0) {
-            printf("%s%s%s attaque %s%s%s !\n", getTypeColor(&wild), wild.name, RESET, getTypeColor(ally), ally->name, RESET);
-            int damage = calculateDamage(wild.attack, ally->defense);
-            ally->hp -= damage;
-            if (ally->hp < 0)
-                ally->hp = 0;
-            printf("Degats: %d, HP restant: %d\n", damage, ally->hp);
+            printf("%s%s%s attaque %s%s%s !\n",
+                   getTypeColor(&wild), wild.name, RESET,
+                   getTypeColor(ally), ally->name, RESET);
+
+            if (wild.numAttacks > 0) {
+                int randomIndex = rand() % wild.numAttacks;
+                Attack wildAttack = wild.attacks[randomIndex];
+                printf("%s%s%s utilise %s%s%s !\n",
+                       getTypeColor(&wild), wild.name, RESET,
+                       getTypeColor(&wild), wildAttack.name, RESET);
+
+                int damage = calculateDamage(wild.attack, wildAttack.damage, ally->defense);
+                ally->hp -= damage;
+                if (ally->hp < 0)
+                    ally->hp = 0;
+                printf("Degats infliges : %d, HP restant de %s%s%s : %d\n",
+                       damage, getTypeColor(ally), ally->name, RESET, ally->hp);
+
+                if (wildAttack.effect_attack > 0) {
+                    wild.attack += wildAttack.effect_attack;
+                    printf("%s%s%s augmente son attaque de %d points !\n",
+                           getTypeColor(&wild), wild.name, RESET, wildAttack.effect_attack);
+                } else if (wildAttack.effect_defence > 0) {
+                    wild.defense += wildAttack.effect_defence;
+                    printf("%s%s%s augmente sa defense de %d points !\n",
+                           getTypeColor(&wild), wild.name, RESET, wildAttack.effect_defence);
+                } else if (wildAttack.effect_evasion > 0) {
+                    wild.evasion += wildAttack.effect_evasion;
+                    printf("%s%s%s augmente son esquive de %d points !\n",
+                           getTypeColor(&wild), wild.name, RESET, wildAttack.effect_evasion);
+                }
+            } else {
+                int damage = calculateDamage(wild.attack, 1, ally->defense);
+                ally->hp -= damage;
+                if (ally->hp < 0)
+                    ally->hp = 0;
+                printf("Degats infliges (attaque par défaut) : %d, HP restant de %s%s%s : %d\n",
+                       damage, getTypeColor(ally), ally->name, RESET, ally->hp);
+            }
 
             if (ally->hp <= 0) {
-                printf(RED"Vous avez perdu le combat.\n"RESET);
-                break;
+                printf(RED "Vous avez perdu le combat.\n" RESET);
             }
         }
+
     }
 }
 
-int calculateDamage(int attack, int defense) {
-    float rawDamage = ((float)attack * BASE_MOVE_DAMAGE) / (float)defense;
+int calculateDamage(int attack, int basse_move_dammage, int defense) {
+    float rawDamage = ((float)attack * basse_move_dammage) / (float)defense;
     int lower = (int)rawDamage;
     if (rawDamage == (float)lower) {
         return lower;

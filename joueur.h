@@ -7,6 +7,15 @@
 
 #define MAX_POKEMONS 10
 #define MAX_TYPE 10
+#define MAX_ATTACKS 4
+
+typedef struct {
+    char name[20];
+    int damage;
+    int effect_attack;
+    int effect_defence;
+    int effect_evasion;
+} Attack;
 
 typedef struct {
     char name[20];
@@ -20,6 +29,8 @@ typedef struct {
     int level;
     int exp;
     char type[MAX_TYPE];
+    Attack attacks[MAX_ATTACKS];
+    int numAttacks;
 } Pokemon;
 
 typedef struct {

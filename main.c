@@ -25,10 +25,22 @@ int main() {
     Pokemon squirtle = {"Squirtle" , 9, 9, 1, 1, 2, 2, 3, 1, 0, "Water"};
     Pokemon bulbasaur = {"Bulbasaur" , 11, 11, 1, 2, 2, 1, 2, 1, 0, "Grass"};
 
+    charmander.attacks[0] = (Attack) {"Scratch", 3, 0,0,0};
+    charmander.attacks[1] = (Attack) {"Growl", 0, 1,0,0};
+    charmander.numAttacks = 2;
+
+    squirtle.attacks[0] = (Attack) {"Pound", 2, 0,0,0};
+    squirtle.attacks[1] = (Attack) {"Shell", 0, 0,1,0};
+    squirtle.numAttacks = 2;
+
+    bulbasaur.attacks[0] = (Attack) {"Pound", 2, 0,0,0};
+    bulbasaur.attacks[1] = (Attack) {"Foliage", 0, 0,0,1};
+    bulbasaur.numAttacks = 2;
+
     printf("Bienvenue dans le jeu Pokemon !\n");
     printf("1. Nouvelle partie\n2. Charger une sauvegarde\nVotre choix : ");
     if (scanf("%d", &option) != 1) {
-        fprintf(stderr, "Entrée invalide.\n");
+        fprintf(stderr, "Entree invalide.\n");
         return 1;
     }
 
