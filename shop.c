@@ -12,7 +12,6 @@ void handleItemTransaction(Player *player, int itemChoice, int isBuying) {
     char itemName[MAX_ITEM_NAME];
     int *itemCount = NULL;
 
-    // Assign the appropriate item details based on the choice
     switch (itemChoice) {
         case 1:
             price = 100;
@@ -34,7 +33,6 @@ void handleItemTransaction(Player *player, int itemChoice, int isBuying) {
         return;
     }
 
-    // Process buying or selling
     if (isBuying) {
         if (player->supcoins >= price) {
             player->supcoins -= price;

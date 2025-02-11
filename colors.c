@@ -30,6 +30,6 @@ const char *getTypeColor(const Pokemon *p) {
         return BROWN;
     }
     else {
-        return RESET; // Par défaut, pas de couleur spéciale
+        return RESET;
     }
 }
