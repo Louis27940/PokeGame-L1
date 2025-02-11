@@ -31,6 +31,7 @@ void printHpBar(Pokemon p) {
     };
 
     wild.maxHp   = playerPokemon.maxHp;
+    wild.hp      = wild.maxHp;
     wild.attack  = playerPokemon.attack + (rand() % 5) - 2;
     if (wild.attack < 1){ wild.attack = 1;}
     wild.defense = playerPokemon.defense + (rand() % 5) - 2;
