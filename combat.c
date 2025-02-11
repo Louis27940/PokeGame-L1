@@ -30,14 +30,19 @@ void printHpBar(Pokemon p) {
         .level = playerPokemon.level
     };
 
-    wild.maxHp = playerPokemon.maxHp;
-    wild.hp = wild.maxHp;
-    wild.attack = playerPokemon.attack + (rand() % 5) - 2;
+    wild.maxHp   = playerPokemon.maxHp;
+    if (wild.maxHp < 1) {wild.maxHp = 1;}
+    wild.hp      = wild.maxHp;
+    wild.attack  = playerPokemon.attack + (rand() % 5) - 2;
+    if (wild.attack < 1){ wild.attack = 1;}
     wild.defense = playerPokemon.defense + (rand() % 5) - 2;
-    wild.speed = playerPokemon.speed + (rand() % 5) - 2;
+    if (wild.defense < 1) {wild.defense = 1;}
+    wild.speed   = playerPokemon.speed + (rand() % 5) - 2;
+    if (wild.speed < 1) {wild.speed = 1;}
     wild.accuracy = (rand() % 5) + 1;
-    wild.evasion = (rand() % 5) + 1;
+    wild.evasion  = (rand() % 5) + 1;
     wild.exp = 0;
+
     switch (index) {
         case 0:  // Pikachu
             strcpy(wild.type, "Electric");
