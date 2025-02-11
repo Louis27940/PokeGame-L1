@@ -87,9 +87,9 @@ int main() {
             printf("|            "YELLOW"~~~* * * * *~~~"RESET"             |\n");
             printf("+----------------------------------------+\n");
             printf("|                                        |\n");
-            printf("|      [1] "RED"Supmander"RESET"  (Feu)             |\n");
+            printf("|      [1] "RED"Supmander"RESET"   (Feu)             |\n");
             printf("|      [2] "BLUE"Supirtel"RESET"    (Eau)             |\n");
-            printf("|      [3] "GREEN"Supasaur"RESET"   (Plante)          |\n");
+            printf("|      [3] "GREEN"Supasaur"RESET"    (Plante)          |\n");
             printf("|                                        |\n");
             printf("+----------------------------------------+\n");
             printf("Votre choix : ");
