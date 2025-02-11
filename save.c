@@ -86,7 +86,7 @@ int loadGameText(Player *player, const char *username) {
         if (fscanf(fp, "%19s %9s %d %d %d %d %d %d %d %d %d %d",
                    p->name, p->type, &p->hp, &p->maxHp, &p->attack,
                    &p->defense, &p->speed, &p->accuracy, &p->evasion,
-                   &p->level, &p->exp, &p->numAttacks) != 12) {
+                   &p->level, &p->exp, &p->numAttacks) != 12 ) {
             fclose(fp);
             return 0;
         }
