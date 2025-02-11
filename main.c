@@ -28,7 +28,7 @@ int main() {
     printf("Bienvenue dans le jeu Pokemon !\n");
     printf("1. Nouvelle partie\n2. Charger une sauvegarde\nVotre choix : ");
     if (scanf("%d", &option) != 1) {
-        fprintf(stderr, "Entrée invalide.\n");
+        fprintf(stderr, "Entree invalide.\n");
         return 1;
     }
 
