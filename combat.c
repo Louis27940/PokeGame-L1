@@ -31,8 +31,6 @@ void printHpBar(Pokemon p) {
     };
 
     wild.maxHp   = playerPokemon.maxHp;
-    if (wild.maxHp < 1) {wild.maxHp = 1;}
-    wild.hp      = wild.maxHp;
     wild.attack  = playerPokemon.attack + (rand() % 5) - 2;
     if (wild.attack < 1){ wild.attack = 1;}
     wild.defense = playerPokemon.defense + (rand() % 5) - 2;
@@ -361,7 +359,7 @@ void switchActivePokemon(Player *player) {
     }
 
     int choice;
-    printf("Entrez le numéro du Pokemon (1-%d) : ", player->numPokemons);
+    printf("Entrez le numero du Pokemon (1-%d) : ", player->numPokemons);
     scanf("%d", &choice);
 
     if (choice < 1 || choice > player->numPokemons) {
