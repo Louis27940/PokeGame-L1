@@ -115,7 +115,7 @@ void battle(Player *player, Pokemon wild) {
 
     while (ally->hp > 0 && wild.hp > 0) {
         int action;
-
+        Pokemon *ally = &player->pokemons[player->activePokemonIndex];
         printf(BLUE "\n-----------------------------\n");
         printf("Votre tour !\n");
         printf("-----------------------------\n" RESET);
