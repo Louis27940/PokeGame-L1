@@ -32,9 +32,9 @@ void printHpBar(Pokemon p) {
 
     wild.maxHp = playerPokemon.maxHp;
     wild.hp = wild.maxHp;
-    wild.attack = playerPokemon.attack + (rand() % 5);
-    wild.defense = playerPokemon.defense + (rand() % 5);
-    wild.speed = playerPokemon.speed + (rand() % 5);
+    wild.attack = playerPokemon.attack + (rand() % 5) - 2;
+    wild.defense = playerPokemon.defense + (rand() % 5) - 2;
+    wild.speed = playerPokemon.speed + (rand() % 5) - 2;
     wild.accuracy = (rand() % 5) + 1;
     wild.evasion = (rand() % 5) + 1;
     wild.exp = 0;
@@ -89,8 +89,6 @@ void printHpBar(Pokemon p) {
             wild.numAttacks = 0;
             break;
 
-    snprintf(wild.name, sizeof(wild.name), "%s", names[index]);
-    return wild;
 }
 
     snprintf(wild.name, sizeof(wild.name), "%s", names[index]);
@@ -99,7 +97,7 @@ void printHpBar(Pokemon p) {
 
 
 void battle(Player *player, Pokemon wild) {
-    Pokemon *ally = &player->pokemons[0];
+    Pokemon *ally = &player->pokemons[player->activePokemonIndex];
 
     printf(YELLOW "\n=============================\n");
     printf("Un %s%s%s "YELLOW"sauvage apparait ! Niveau: %d\n", getTypeColor(&wild), wild.name, RESET, wild.level);
@@ -123,7 +121,7 @@ void battle(Player *player, Pokemon wild) {
         printf("\n\n");
 
         printf("1- Attaquer\n");
-        printf("2- Esquiver\n");
+        printf("2- Changer de Pokemon\n");
         printf("3- Utiliser un objet\n");
         printf("4- Capturer\n");
         printf("5- Fuir\n");
@@ -136,7 +134,7 @@ void battle(Player *player, Pokemon wild) {
                 int attackChoice;
                 printf("Choisissez une attaque :\n");
                 for (int i = 0; i < ally->numAttacks; i++) {
-                    printf("  [%d] %s (Dégâts: %d, Attaque: +%d, Defence: +%d, Evasion: +%d)\n",
+                    printf("  [%d] %s (Degats: %d, Attaque: +%d, Defence: +%d, Evasion: +%d)\n",
                            i + 1, ally->attacks[i].name, ally->attacks[i].damage, ally->attacks[i].effect_attack, ally->attacks[i].effect_defence, ally->attacks[i].effect_evasion);
                 }
                 printf("Votre choix : ");
@@ -171,22 +169,16 @@ void battle(Player *player, Pokemon wild) {
                     ally->evasion += chosenAttack.effect_evasion;
                     printf("%s%s%s augmente son evasion de %d points !\n", getTypeColor(ally), ally->name, RESET, chosenAttack.effect_evasion);
                 }
-                printf("Vous attaquez %s%s%s ! Degats: %d, HP restant: %d\n",
-                       getTypeColor(&wild), wild.name, RESET, damage, wild.hp);
+                printf("Vous attaquez %s%s%s ! Degats: %d ",
+                       getTypeColor(&wild), wild.name, RESET, damage);
+                printHpBar(wild);
+                printf("\n");
+
             } break;
 
             case 2: {
-                printf("Vous tentez d'esquiver !\n");
-                float dodgeRate = (float)wild.accuracy / ((float)wild.accuracy + (float)ally->evasion) + 0.1f;
-                if (dodgeRate > 1.0f)
-                    dodgeRate = 1.0f;
-                float chance = (float)rand() / (float)RAND_MAX;
-                if (chance < dodgeRate) {
-                    printf("Esquive reussie ! Vous evitez l'attaque ennemie.\n");
-                    continue; // Passe directement au prochain tour
-                } else {
-                    printf("Esquive echouee !\n");
-                }
+                switchActivePokemon(player);
+                break;
             } break;
 
             case 3: {
@@ -351,6 +343,37 @@ int calculateDamage(int attack, int basse_move_dammage, int defense) {
     }
 }
 
+void switchActivePokemon(Player *player) {
+    if (player->numPokemons <= 1) {
+        printf("Vous n'avez qu'un seul Pokemon, vous ne pouvez pas changer !\n");
+        return;
+    }
+
+    printf("\nChoisissez un nouveau Pokemon actif :\n");
+    for (int i = 0; i < player->numPokemons; i++) {
+        printf("[%d] %s (HP: %d/%d)\n", i + 1, player->pokemons[i].name,
+               player->pokemons[i].hp, player->pokemons[i].maxHp);
+    }
+
+    int choice;
+    printf("Entrez le numéro du Pokemon (1-%d) : ", player->numPokemons);
+    scanf("%d", &choice);
+
+    if (choice < 1 || choice > player->numPokemons) {
+        printf("Choix invalide !\n");
+        return;
+    }
+
+    if (player->pokemons[choice - 1].hp <= 0) {
+        printf("Ce Pokemon est K.O. ! Vous ne pouvez pas l'envoyer au combat.\n");
+        return;
+    }
+
+    player->activePokemonIndex = choice - 1;
+    printf("Vous avez choisi %s comme Pokemon actif !\n", player->pokemons[player->activePokemonIndex].name);
+}
+
+
 int roundStat(float value) {
     int lower = (int)value;
     if (value == (float)lower) {
@@ -401,6 +424,10 @@ void candyLevelUp(Pokemon *pokemon) {
 
 
 void exploreNature(Player *player) {
+    if (player->pokemons[player->activePokemonIndex].hp <= 0) {
+        printf("Vous devez d'abord soigner vos pokemons pour explorer\n");
+        return;
+    }
     if (player->numPokemons == 0) {
         printf("Vous devez avoir au moins un Pokemon pour explorer.\n");
         return;

@@ -42,17 +42,33 @@ void showPokemons(Player *player) {
     if (player->numPokemons == 0) {
         printf("Vous n'avez pas encore de Pokemon.\n");
     } else {
-        printf("Voici vos Pokemon:\n");
+        printf("=== Votre equipe de Pokemon ===\n");
         for (int i = 0; i < player->numPokemons; i++) {
-            printf("Pokemon %d: %s%s%s\n", i + 1, getTypeColor(&player->pokemons[i]), player->pokemons[i].name, RESET);
-            printf("  HP: %d/%d\n", player->pokemons[i].hp, player->pokemons[i].maxHp);
-            printf("  Attaque: %d\n", player->pokemons[i].attack);
-            printf("  Defense: %d\n", player->pokemons[i].defense);
-            printf("  Vitesse: %d\n", player->pokemons[i].speed);
-            printf("  Accuracie: %d\n", player->pokemons[i].accuracy);
-            printf("  Evasion: %d\n", player->pokemons[i].evasion);
-            printf("  Niveau: %d\n", player->pokemons[i].level);
-            printf("  Exp: %d\n\n", player->pokemons[i].exp);
+            // Vérifie si c'est le Pokémon actif
+            int isActive = (i == player->activePokemonIndex);
+
+            // Affichage du nom avec une icône si actif
+            printf("\n[%d] %s%s%s %s\n",
+                   i + 1,
+                   getTypeColor(&player->pokemons[i]),
+                   player->pokemons[i].name,
+                   RESET,
+                   isActive ? " (Actif)" : "");
+
+            // Affichage des statistiques
+            printf("  -> HP: %d/%d\n", player->pokemons[i].hp, player->pokemons[i].maxHp);
+            printf("  -> Attaque: %d\n", player->pokemons[i].attack);
+            printf("  -> Defense: %d\n", player->pokemons[i].defense);
+            printf("  -> Vitesse: %d\n", player->pokemons[i].speed);
+            printf("  -> Accuracie: %d\n", player->pokemons[i].accuracy);
+            printf("  -> Evasion: %d\n", player->pokemons[i].evasion);
+            printf("  -> Niveau: %d\n", player->pokemons[i].level);
+            printf("  -> Exp: %d\n", player->pokemons[i].exp);
+
+            // Séparateur sauf pour le dernier Pokémon
+            if (i < player->numPokemons - 1) {
+                printf("-----------------------------------\n");
+            }
         }
     }
 }

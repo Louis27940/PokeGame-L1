@@ -40,6 +40,7 @@ typedef struct {
     int supcoins;
     Pokemon pokemons[MAX_POKEMONS];
     int numPokemons;
+    int activePokemonIndex;
 } Player;
 
 void showInventory(Player *player, Pokemon *ally);

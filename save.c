@@ -10,7 +10,6 @@
 void saveGameText(const Player *player, const char *username) {
     char filename[100];
     snprintf(filename, sizeof(filename), "%s.txt", username);
-    printf("[DEBUG] Nom du fichier de sauvegarde: %s\n", filename);
 
     FILE *fp = fopen(filename, "w+");
     if (fp == NULL) {
@@ -27,7 +26,7 @@ void saveGameText(const Player *player, const char *username) {
             player->superPotion,
             player->rareCandy,
             player->numPokemons);
-
+    fprintf(fp, "%d\n", player->activePokemonIndex);
     // Sauvegarde des Pokémon du joueur
     for (int i = 0; i < player->numPokemons; i++) {
         Pokemon p = player->pokemons[i];
@@ -76,6 +75,10 @@ int loadGameText(Player *player, const char *username) {
     if (player->numPokemons > MAX_POKEMONS) {
         player->numPokemons = MAX_POKEMONS;
     }
+    if (fscanf(fp, "%d", &player->activePokemonIndex) != 1) {
+        fclose(fp);
+        return 0;
+    }
 
     for (int i = 0; i < player->numPokemons; i++) {
         Pokemon *p = &player->pokemons[i];
@@ -107,5 +110,8 @@ int loadGameText(Player *player, const char *username) {
 
     fclose(fp);
     printf("Sauvegarde chargee depuis le fichier '%s'.\n", filename);
+    printf("Joueur: %s | Supcoins: %d | Pokemon Actif: %s\n",
+       fileUsername, player->supcoins, player->pokemons[player->activePokemonIndex].name);
+
     return 1;
 }
