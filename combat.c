@@ -283,7 +283,7 @@ void battle(Player *player, Pokemon wild) {
             int coin_gagnee = (rand() % (500 - 100 + 1)) + 100;
             ally->exp += exp_gagnee;
             player->supcoins += coin_gagnee;
-            printf("Vous avez gagne %d "YELLOW"Supcoins"RESET, coin_gagnee);
+            printf("Vous avez gagne %d "YELLOW"Supcoins\n"RESET, coin_gagnee);
             printf("%s%s%s a gagne %d points d'experience\n", getTypeColor(ally), ally->name, RESET, exp_gagnee);
             levelUp(ally);
             break;
